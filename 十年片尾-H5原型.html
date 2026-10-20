@@ -1668,6 +1668,35 @@
       transform: translateY(0);
     }
 
+    .invite-screen.summary-transitioning .exhibition-reveal,
+    .invite-screen.summary-ready .exhibition-reveal,
+    .invite-screen.credits-playing .exhibition-reveal,
+    .invite-screen.farewell-transitioning .exhibition-reveal,
+    .invite-screen.farewell-ready .exhibition-reveal,
+    .invite-screen.finale-ready .exhibition-reveal,
+    .invite-screen.summary-transitioning .exhibition-fixed-mask,
+    .invite-screen.summary-ready .exhibition-fixed-mask,
+    .invite-screen.credits-playing .exhibition-fixed-mask,
+    .invite-screen.farewell-transitioning .exhibition-fixed-mask,
+    .invite-screen.farewell-ready .exhibition-fixed-mask,
+    .invite-screen.finale-ready .exhibition-fixed-mask {
+      display: none;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: none;
+    }
+
+    .invite-screen.summary-transitioning .exhibition-carousel,
+    .invite-screen.summary-ready .exhibition-carousel,
+    .invite-screen.credits-playing .exhibition-carousel,
+    .invite-screen.farewell-transitioning .exhibition-carousel,
+    .invite-screen.farewell-ready .exhibition-carousel,
+    .invite-screen.finale-ready .exhibition-carousel {
+      perspective: none;
+      transform-style: flat;
+    }
+
     .invite-screen.carousel-ready .split-scene {
       cursor: grab;
       pointer-events: auto;
@@ -2008,6 +2037,7 @@
     .invite-screen.summary-transitioning .summary-scene,
     .invite-screen.summary-ready .summary-scene {
       visibility: visible;
+      background: linear-gradient(to bottom, #070808, #2d363c);
     }
 
     .summary-cinema-layer,
@@ -3790,19 +3820,25 @@
       carouselReady = false;
       gesture = null;
       splitScene.classList.remove("is-dragging");
+      inviteScreen.classList.remove("carousel-ready");
       inviteScreen.classList.add("summary-transitioning");
       summaryScene.setAttribute("aria-hidden", "false");
-      updateVotingUi();
-      prepareSummaryText();
-
-      const outgoing = [
+      [
         exhibitionBackdrops,
         exhibitionUi,
         exhibitionCarousel,
         exhibitionProgress,
-        splitFinalPose,
-        splitZuoyi,
         exhibitionFixedMask
+      ].forEach(element => {
+        element.hidden = true;
+        element.setAttribute("aria-hidden", "true");
+      });
+      updateVotingUi();
+      prepareSummaryText();
+
+      const outgoing = [
+        splitFinalPose,
+        splitZuoyi
       ];
       const incoming = [summaryFinalPose, ...summaryCinemaLayers];
 
@@ -4039,6 +4075,21 @@
       splitScene.classList.remove("is-dragging");
       summaryScene.setAttribute("aria-hidden", "true");
       farewellScene.setAttribute("aria-hidden", "true");
+      [
+        exhibitionBackdrops,
+        exhibitionUi,
+        exhibitionCarousel,
+        exhibitionProgress,
+        exhibitionFixedMask
+      ].forEach(element => {
+        element.hidden = false;
+        element.removeAttribute("hidden");
+        if (element !== exhibitionBackdrops && element !== exhibitionFixedMask) {
+          element.removeAttribute("aria-hidden");
+        } else {
+          element.setAttribute("aria-hidden", "true");
+        }
+      });
       exhibitionUi.getAnimations().forEach(animation => animation.cancel());
       exhibitionUi.style.removeProperty("opacity");
       exhibitionUi.style.removeProperty("transform");

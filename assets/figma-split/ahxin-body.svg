@@ -1,0 +1,27 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="49.3119" height="44.5368" viewBox="0 0 49.3119 44.5368" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Vector 1441" filter="url(#filter0_n_0_110)">
+<path d="M36.432 0.0361147C27.932 -0.418745 24.2653 3.53612 22.932 5.53612C12.9319 0.735529 6.09862 5.20303 3.93195 8.03685C-4.06809 18.5002 1.432 26.5293 8.93195 31.5368L28.932 44.5368C33.432 38.8702 42.064 28.459 42.432 28.0293C48.432 21.0218 50.1819 16.5293 48.932 11.0293C48.0986 7.36239 44.0316 0.442794 36.432 0.0361147Z" fill="url(#paint0_radial_0_110)"/>
+</g>
+<defs>
+<filter id="filter0_n_0_110" x="0" y="0" width="49.3119" height="44.5368" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feTurbulence type="fractalNoise" baseFrequency="1.8114387989044189 2.5360140800476074" stitchTiles="stitch" numOctaves="3" result="noise" seed="3467" />
+<feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise" />
+<feComponentTransfer in="alphaNoise" result="coloredNoise1">
+<feFuncA type="discrete" tableValues="0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "/>
+</feComponentTransfer>
+<feComposite operator="in" in2="shape" in="coloredNoise1" result="noise1Clipped" />
+<feFlood flood-color="rgba(255, 255, 255, 0.25)" result="color1Flood" />
+<feComposite operator="in" in2="noise1Clipped" in="color1Flood" result="color1" />
+<feMerge result="effect1_noise_0_110">
+<feMergeNode in="shape" />
+<feMergeNode in="color1" />
+</feMerge>
+</filter>
+<radialGradient id="paint0_radial_0_110" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(24.656 18.6079) rotate(90) scale(25.929 28.709)">
+<stop stop-color="#92F476"/>
+<stop offset="1" stop-color="#48E07B"/>
+</radialGradient>
+</defs>
+</svg>

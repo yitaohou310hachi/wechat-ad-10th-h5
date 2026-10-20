@@ -1,0 +1,4166 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#f4fef7">
+  <title>朋友圈广告十年放映礼</title>
+  <style>
+    :root {
+      --stage-scale: 1;
+      --green: #13c974;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      min-height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #f4fef7;
+      color: #000;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    .stage {
+      position: fixed;
+      top: calc(50% + .5px);
+      left: 50%;
+      width: 390px;
+      height: 844px;
+      overflow: hidden;
+      border: 7px solid #4f4f4f;
+      border-radius: 30px;
+      background: #fff;
+      transform: translate(-50%, -50%) scale(var(--stage-scale));
+      transform-origin: center;
+      isolation: isolate;
+    }
+
+    .invite-screen {
+      position: absolute;
+      top: -7px;
+      left: -7px;
+      width: 390px;
+      height: 844px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .wechat-status-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 20;
+      width: 390px;
+      height: 44px;
+      color: #000;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    }
+
+    .status-time {
+      position: absolute;
+      top: 14px;
+      left: 38px;
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 22px;
+      letter-spacing: -.408px;
+    }
+
+    .status-icons {
+      position: absolute;
+      top: 17px;
+      right: 27px;
+      display: flex;
+      height: 13px;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cellular-icon {
+      display: flex;
+      height: 12px;
+      align-items: flex-end;
+      gap: 2px;
+    }
+
+    .cellular-icon i {
+      display: block;
+      width: 3px;
+      border-radius: 1px;
+      background: currentColor;
+    }
+
+    .cellular-icon i:nth-child(1) { height: 4px; }
+    .cellular-icon i:nth-child(2) { height: 7px; }
+    .cellular-icon i:nth-child(3) { height: 10px; }
+    .cellular-icon i:nth-child(4) { height: 12px; }
+
+    .wifi-icon {
+      position: relative;
+      width: 16px;
+      height: 12px;
+      overflow: hidden;
+    }
+
+    .wifi-icon::before,
+    .wifi-icon::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      border: 2px solid currentColor;
+      border-right-color: transparent;
+      border-bottom-color: transparent;
+      border-radius: 50%;
+      transform: translateX(-50%) rotate(45deg);
+    }
+
+    .wifi-icon::before {
+      top: -5px;
+      width: 16px;
+      height: 16px;
+    }
+
+    .wifi-icon::after {
+      top: 1px;
+      width: 8px;
+      height: 8px;
+    }
+
+    .battery-icon {
+      position: relative;
+      width: 25px;
+      height: 12px;
+      border: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+      border-radius: 3px;
+    }
+
+    .battery-icon::before {
+      content: "";
+      position: absolute;
+      inset: 2px;
+      border-radius: 1px;
+      background: currentColor;
+    }
+
+    .battery-icon::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      right: -3px;
+      width: 2px;
+      height: 6px;
+      border-radius: 0 2px 2px 0;
+      background: currentColor;
+      opacity: .35;
+    }
+
+    .wechat-nav {
+      position: absolute;
+      top: 44px;
+      left: 0;
+      z-index: 20;
+      width: 390px;
+      height: 48px;
+      color: #191919;
+      pointer-events: none;
+    }
+
+    .home-close,
+    .home-more {
+      position: absolute;
+      top: 7px;
+      width: 34px;
+      height: 34px;
+    }
+
+    .home-close {
+      left: 11px;
+    }
+
+    .home-close::before,
+    .home-close::after {
+      content: "";
+      position: absolute;
+      top: 16px;
+      left: 8px;
+      width: 20px;
+      height: 1.8px;
+      border-radius: 2px;
+      background: currentColor;
+    }
+
+    .home-close::before { transform: rotate(45deg); }
+    .home-close::after { transform: rotate(-45deg); }
+
+    .home-more {
+      right: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+    }
+
+    .home-more i {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .opening {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+    }
+
+    .opening-chat-stack {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      will-change: transform, opacity;
+    }
+
+    .invite-screen.show-entry .opening-chat-stack {
+      opacity: 0;
+      transition: opacity .3s ease;
+    }
+
+    .chat {
+      position: absolute;
+      color: #000;
+      opacity: 0;
+      translate: 0 3px;
+      transition:
+        translate .8s cubic-bezier(.29, .02, .28, .96),
+        opacity .3s cubic-bezier(.29, .02, .28, .96);
+      will-change: translate, opacity;
+    }
+
+    .invite-screen.sequence-active .chat {
+      opacity: 1;
+      translate: 0 0;
+      transition-delay: var(--chat-delay);
+    }
+
+    .chat-card {
+      position: relative;
+      display: flex;
+      height: 100%;
+      align-items: center;
+      padding: 0 24px;
+      border-radius: 9.6px;
+      background: #f7f7f7;
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1.6;
+      white-space: nowrap;
+    }
+
+    .chat-tail {
+      position: absolute;
+      top: 50%;
+      left: -43px;
+      width: 76.8px;
+      height: 9.60039px;
+      transform: translateY(-50%) rotate(-90deg) scaleY(-1);
+      pointer-events: none;
+    }
+
+    .chat-1 {
+      top: 145px;
+      left: 96px;
+      width: 197px;
+      height: 68px;
+      transform: rotate(-3.82deg);
+      --chat-delay: 2.3s;
+    }
+
+    .chat-2 {
+      top: 257px;
+      left: 77px;
+      width: 246px;
+      height: 75px;
+      transform: rotate(-1.01deg);
+      --chat-delay: 3.4s;
+    }
+
+    .chat-3 {
+      top: 370px;
+      left: 72px;
+      width: 265px;
+      height: 82px;
+      transform: rotate(-1.01deg);
+      --chat-delay: 4.5s;
+    }
+
+    .chat-4 {
+      top: 490px;
+      left: 106px;
+      width: 177px;
+      height: 76px;
+      transform: rotate(-1.01deg);
+      --chat-delay: 5.6s;
+    }
+
+    .accent {
+      color: var(--green);
+    }
+
+    .chat-card .char {
+      display: inline-block;
+      white-space: pre;
+      opacity: 0;
+      filter: blur(2px);
+      transform: translateY(3px);
+      transition:
+        opacity 1s ease,
+        transform 1s cubic-bezier(.22, 1, .36, 1),
+        filter .9s ease;
+      will-change: opacity, transform, filter;
+    }
+
+    .invite-screen.sequence-active .opening-chat-stack .char,
+    .invite-screen.show-entry .entry-chat .char {
+      opacity: 1;
+      filter: blur(0);
+      transform: translateY(0);
+    }
+
+    .invite-screen.sequence-reset .chat,
+    .invite-screen.sequence-reset .chat-card .char {
+      transition: none !important;
+    }
+
+    .invite-screen.sequence-reset .chat {
+      opacity: 0;
+      translate: 0 3px;
+    }
+
+    .invite-screen.sequence-reset .chat-card .char {
+      opacity: 0;
+      filter: blur(2px);
+      transform: translateY(3px);
+    }
+
+    .home-walker {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      transform: translateX(-390px);
+      will-change: transform;
+    }
+
+    .invite-screen.sequence-active .home-walker {
+      animation: home-walk-in 2s linear forwards;
+    }
+
+    .home-shadow {
+      position: absolute;
+      top: 758px;
+      left: 97px;
+      z-index: 1;
+      width: 195px;
+      height: 26px;
+      transform-origin: center;
+    }
+
+    .home-ahxin {
+      position: absolute;
+      top: 654.44px;
+      left: 136px;
+      z-index: 2;
+      width: 126px;
+      height: 122px;
+      opacity: 1;
+    }
+
+    .invite-screen.sequence-active .home-ahxin {
+      animation: home-running-hide .18s ease 1.95s forwards;
+    }
+
+    .walk-frame {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+    }
+
+    .invite-screen.sequence-active .walk-frame-1 {
+      animation: home-frame-1 1s steps(1, end) 2;
+    }
+
+    .invite-screen.sequence-active .walk-frame-2 {
+      animation: home-frame-2 1s steps(1, end) 2;
+    }
+
+    .invite-screen.sequence-active .walk-frame-3 {
+      animation: home-frame-3 1s steps(1, end) 2;
+    }
+
+    .invite-screen.sequence-active .walk-frame-4 {
+      animation: home-frame-4 1s steps(1, end) 2;
+    }
+
+    .invite-screen.sequence-active .walk-frame-5 {
+      animation: home-frame-5 1s steps(1, end) 2;
+    }
+
+    .invite-screen.sequence-active .walk-frame-6 {
+      animation: home-frame-6 1s steps(1, end) 2 forwards;
+    }
+
+    .walk-body-slot,
+    .walk-hearts-slot,
+    .walk-leg-slot {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .walk-body-slot {
+      top: 0;
+      left: 0;
+      width: 117.058px;
+      height: 107.101px;
+      z-index: 2;
+    }
+
+    .walk-body {
+      width: 117.058px;
+      height: 107.101px;
+      object-fit: cover;
+      transform: rotate(180deg) scaleY(-1);
+    }
+
+    .walk-hearts-slot {
+      top: 43.35px;
+      left: 29.53px;
+      width: 63.1px;
+      height: 48.875px;
+      z-index: 3;
+    }
+
+    .walk-hearts {
+      width: 56.48px;
+      height: 39.24px;
+      transform: rotate(170.08deg) scaleY(-1);
+    }
+
+    .walk-leg-slot {
+      z-index: 1;
+    }
+
+    .walk-leg-slot img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .frame-1-leg-right,
+    .frame-1-leg-left,
+    .frame-2-leg-left,
+    .frame-6-leg-right,
+    .frame-6-leg-left {
+      width: 22.5px;
+      height: 39.5px;
+    }
+
+    .frame-1-leg-right,
+    .frame-6-leg-right {
+      top: 80px;
+      left: 64.67px;
+    }
+
+    .frame-1-leg-left,
+    .frame-6-leg-left {
+      top: 80px;
+      left: 31px;
+      transform: rotate(180deg) scaleY(-1);
+    }
+
+    .frame-2-leg-right {
+      top: 72px;
+      left: 59px;
+      width: 35.834px;
+      height: 45.089px;
+    }
+
+    .frame-2-leg-right img {
+      width: 22.5px;
+      height: 39.5px;
+      transform: rotate(-22.36deg);
+    }
+
+    .frame-2-leg-left {
+      top: 80px;
+      left: 32px;
+    }
+
+    .walk-frame-3 .walk-body-slot {
+      top: -4px;
+      width: 125.105px;
+      height: 115.961px;
+    }
+
+    .walk-frame-3 .walk-body {
+      transform: rotate(175.5deg) scaleY(-1);
+    }
+
+    .walk-frame-3 .walk-hearts-slot {
+      top: 41.32px;
+      width: 66.254px;
+      height: 53.31px;
+    }
+
+    .walk-frame-3 .walk-hearts {
+      transform: rotate(165.57deg) scaleY(-1);
+    }
+
+    .frame-3-leg-right {
+      top: 82.93px;
+      left: 58.52px;
+      width: 21.842px;
+      height: 30.132px;
+    }
+
+    .frame-3-leg-left {
+      top: 80.43px;
+      left: 45.02px;
+      width: 22.5px;
+      height: 39.5px;
+    }
+
+    .walk-frame-4 .walk-body-slot {
+      top: -2px;
+    }
+
+    .walk-frame-4 .walk-body {
+      transform: rotate(180deg) scaleY(-1);
+    }
+
+    .walk-frame-4 .walk-hearts-slot {
+      top: 41.35px;
+    }
+
+    .frame-4-leg-right {
+      top: 86px;
+      left: 29.5px;
+      width: 31.676px;
+      height: 34px;
+    }
+
+    .frame-4-leg-left {
+      top: 77px;
+      left: 61px;
+      width: 29.218px;
+      height: 42.894px;
+    }
+
+    .frame-4-leg-left img {
+      width: 22.5px;
+      height: 39.5px;
+      transform: rotate(-10.33deg);
+    }
+
+    .walk-frame-5 .walk-body-slot {
+      top: -6px;
+      width: 120.844px;
+      height: 111.253px;
+    }
+
+    .walk-frame-5 .walk-body {
+      transform: rotate(177.93deg) scaleY(-1);
+    }
+
+    .walk-frame-5 .walk-hearts-slot {
+      top: 38.29px;
+      width: 64.597px;
+      height: 50.95px;
+    }
+
+    .walk-frame-5 .walk-hearts {
+      transform: rotate(168.01deg) scaleY(-1);
+    }
+
+    .frame-5-leg-left {
+      top: 74.22px;
+      left: 60.55px;
+      width: 33.909px;
+      height: 44.609px;
+    }
+
+    .frame-5-leg-left img {
+      width: 22.5px;
+      height: 39.5px;
+      transform: rotate(-18.57deg);
+    }
+
+    .frame-5-leg-right {
+      top: 74.08px;
+      left: 25.89px;
+      width: 38.342px;
+      height: 45.436px;
+    }
+
+    .frame-5-leg-right img {
+      width: 22.5px;
+      height: 39.5px;
+      transform: rotate(27.84deg);
+    }
+
+    .home-standing-ahxin {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      opacity: 0;
+    }
+
+    .invite-screen.sequence-active .home-standing-ahxin {
+      animation: home-standing-in .18s ease 1.95s forwards;
+    }
+
+    @keyframes home-walk-in {
+      from { transform: translateX(-390px); }
+      to { transform: translateX(0); }
+    }
+
+    @keyframes home-frame-1 {
+      0%, 16.65% { opacity: 1; }
+      16.67%, 100% { opacity: 0; }
+    }
+
+    @keyframes home-frame-2 {
+      0%, 16.65% { opacity: 0; }
+      16.67%, 33.31% { opacity: 1; }
+      33.33%, 100% { opacity: 0; }
+    }
+
+    @keyframes home-frame-3 {
+      0%, 33.31% { opacity: 0; }
+      33.33%, 49.98% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    @keyframes home-frame-4 {
+      0%, 49.98% { opacity: 0; }
+      50%, 66.65% { opacity: 1; }
+      66.67%, 100% { opacity: 0; }
+    }
+
+    @keyframes home-frame-5 {
+      0%, 66.65% { opacity: 0; }
+      66.67%, 83.31% { opacity: 1; }
+      83.33%, 100% { opacity: 0; }
+    }
+
+    @keyframes home-frame-6 {
+      0%, 83.31% { opacity: 0; }
+      83.33%, 100% { opacity: 1; }
+    }
+
+    @keyframes home-running-hide {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    @keyframes home-standing-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .entry {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .entry-chat {
+      position: absolute;
+      top: 113px;
+      left: 36px;
+      width: 319.707px;
+      height: 86.433px;
+      opacity: 0;
+      translate: 0 3px;
+      transform: rotate(2.07deg);
+      will-change: translate, opacity;
+    }
+
+    .invite-screen.show-entry .entry-chat {
+      opacity: 1;
+      translate: 0 0;
+      transition:
+        translate .8s cubic-bezier(.29, .02, .28, .96) .3s,
+        opacity .3s cubic-bezier(.29, .02, .28, .96) .3s;
+    }
+
+    .entry-event {
+      position: absolute;
+      top: 221px;
+      left: 67px;
+      display: flex;
+      width: 256px;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(3px);
+    }
+
+    .invite-screen.show-entry .entry-event {
+      opacity: 1;
+      transform: translateY(0);
+      transition:
+        transform 1.3s cubic-bezier(.29, .02, .28, .96) 1.8s,
+        opacity .8s cubic-bezier(.29, .02, .28, .96) 1.8s;
+    }
+
+    .top-heart {
+      display: block;
+      width: 140px;
+      height: 140px;
+    }
+
+    .event-copy {
+      display: flex;
+      width: 100%;
+      margin-top: 8px;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .event-title {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.28;
+      letter-spacing: 1.12px;
+    }
+
+    .participation {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .participation-count {
+      margin: 0;
+      font-size: 24px;
+      line-height: 24px;
+    }
+
+    .participation-count strong {
+      color: #2dda73;
+      font-family: "Arial Rounded MT Bold", "PingFang SC", sans-serif;
+      font-weight: 600;
+    }
+
+    .participation-label {
+      margin: 0;
+      color: rgba(0, 0, 0, .8);
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .entry-hint {
+      position: absolute;
+      top: 566px;
+      left: 100px;
+      z-index: 5;
+      width: 190px;
+      margin: 0;
+      color: #80ee8f;
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1.6;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(3px);
+    }
+
+    .invite-screen.show-entry .entry-hint {
+      opacity: 1;
+      transform: translateY(0);
+      transition:
+        transform .8s cubic-bezier(.29, .02, .28, .96) 1.4s,
+        opacity .3s cubic-bezier(.29, .02, .28, .96) 1.4s;
+      animation:
+        hint-pulse 1.9s ease-in-out 2.4s infinite;
+    }
+
+    .invite-screen.show-entry:not(.entering) .entry-hint {
+      cursor: pointer;
+      pointer-events: auto;
+    }
+
+    .invite-screen.entering .entry-chat,
+    .invite-screen.entering .entry-event,
+    .invite-screen.entering .entry-hint {
+      animation: entry-content-out .35s ease forwards;
+      pointer-events: none;
+    }
+
+    .invite-screen.entering .home-standing-ahxin {
+      animation: current-ahxin-out .12s linear forwards;
+    }
+
+    .invite-screen.entering .home-shadow {
+      animation: current-shadow-out .4s ease forwards;
+    }
+
+    .post-entry-chat {
+      position: absolute;
+      left: 94.99px;
+      z-index: 7;
+      width: 200.49px;
+      height: 78.498px;
+      color: #000;
+      opacity: 0;
+      translate: 0 3px;
+      transition:
+        translate .8s cubic-bezier(.29, .02, .28, .96),
+        opacity .3s cubic-bezier(.29, .02, .28, .96);
+      pointer-events: none;
+      will-change: translate, opacity;
+    }
+
+    .post-entry-chat-1 {
+      top: 291px;
+      --post-chat-delay: 1.6s;
+    }
+
+    .post-entry-chat-2 {
+      top: 398px;
+      --post-chat-delay: 2.7s;
+    }
+
+    .post-chat-inner {
+      position: absolute;
+      top: 50%;
+      left: 9.6px;
+      width: 180.49px;
+      height: 75.2px;
+      transform: translateY(-50%) rotate(-1.01deg);
+    }
+
+    .invite-screen.entering .post-entry-chat {
+      opacity: 1;
+      translate: 0 0;
+      transition-delay: var(--post-chat-delay);
+    }
+
+    .invite-screen.entering .post-entry-chat .char {
+      opacity: 1;
+      filter: blur(0);
+      transform: translateY(0);
+    }
+
+    .entry-character-group {
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      opacity: 0;
+      transform: scale(1.3815);
+      transform-origin: 96.75px 779.5px;
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    .invite-screen.entering .entry-character-group {
+      animation:
+        entry-group-scale 1.4s ease-in forwards,
+        entry-group-in .12s linear forwards;
+    }
+
+    .transition-shadow {
+      position: absolute;
+      top: 758px;
+      left: 117px;
+      z-index: 1;
+      width: 169px;
+      height: 26px;
+      opacity: 0;
+    }
+
+    .invite-screen.entering .transition-shadow {
+      animation: transition-shadow-in .4s ease forwards;
+    }
+
+    .target-ahxin {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+    }
+
+    .target-ahxin-body-slot,
+    .target-ahxin-hearts-slot {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .target-ahxin-body-slot {
+      top: 689px;
+      left: 125.16px;
+      width: 84.733px;
+      height: 77.525px;
+    }
+
+    .target-ahxin-body {
+      width: 84.733px;
+      height: 77.525px;
+      object-fit: cover;
+      transform: rotate(180deg) scaleY(-1);
+    }
+
+    .target-ahxin-hearts-slot {
+      top: 720.55px;
+      left: 146.8px;
+      width: 45.167px;
+      height: 35.026px;
+      z-index: 2;
+    }
+
+    .target-ahxin-hearts {
+      width: 40.883px;
+      height: 28.405px;
+      transform: rotate(170.08deg) scaleY(-1);
+    }
+
+    .target-ahxin-leg-right,
+    .target-ahxin-leg-left {
+      position: absolute;
+      top: 746.91px;
+      z-index: 1;
+      width: 16.287px;
+      height: 28.592px;
+    }
+
+    .target-ahxin-leg-right {
+      left: 171.97px;
+    }
+
+    .target-ahxin-leg-left {
+      left: 147.6px;
+      transform: rotate(180deg) scaleY(-1);
+    }
+
+    .person-transition {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      transform: translateX(110px);
+      will-change: transform;
+    }
+
+    .invite-screen.entering .person-transition {
+      animation: person-walk-in 1.4s linear forwards;
+    }
+
+    .person-frame-sequence {
+      position: absolute;
+      inset: 0;
+    }
+
+    .invite-screen.entering .person-frame-sequence {
+      animation: person-sequence-out .1s ease 1.3s forwards;
+    }
+
+    .person-walk-frame {
+      position: absolute;
+      top: 596px;
+      left: 184px;
+      display: block;
+      width: 104px;
+      height: 194px;
+      opacity: 0;
+    }
+
+    .invite-screen.entering .person-frame-1 {
+      animation: person-frame-1 1.4s steps(1, end) forwards;
+    }
+
+    .invite-screen.entering .person-frame-2 {
+      animation: person-frame-2 1.4s steps(1, end) forwards;
+    }
+
+    .invite-screen.entering .person-frame-3 {
+      animation: person-frame-3 1.4s steps(1, end) forwards;
+    }
+
+    .invite-screen.entering .person-frame-4 {
+      animation: person-frame-4 1.4s steps(1, end) forwards;
+    }
+
+    .invite-screen.entering .person-frame-5 {
+      animation: person-frame-5 1.4s steps(1, end) forwards;
+    }
+
+    .invite-screen.entering .person-frame-6 {
+      animation: person-frame-6 1.4s steps(1, end) forwards;
+    }
+
+    .person-standing {
+      position: absolute;
+      top: 612px;
+      left: 201px;
+      display: block;
+      width: 70.241px;
+      height: 164.067px;
+      opacity: 0;
+    }
+
+    .invite-screen.entering .person-standing {
+      animation: person-standing-in .1s ease 1.3s forwards;
+    }
+
+    @keyframes entry-content-out {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    @keyframes current-ahxin-out {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    @keyframes current-shadow-out {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    @keyframes entry-group-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes entry-group-scale {
+      from { transform: scale(1.3815); }
+      to { transform: scale(1); }
+    }
+
+    @keyframes transition-shadow-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes person-walk-in {
+      from { transform: translateX(110px); }
+      to { transform: translateX(0); }
+    }
+
+    @keyframes person-frame-1 {
+      0%, 16.65% { opacity: 1; }
+      16.67%, 100% { opacity: 0; }
+    }
+
+    @keyframes person-frame-2 {
+      0%, 16.65% { opacity: 0; }
+      16.67%, 33.31% { opacity: 1; }
+      33.33%, 100% { opacity: 0; }
+    }
+
+    @keyframes person-frame-3 {
+      0%, 33.31% { opacity: 0; }
+      33.33%, 49.98% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    @keyframes person-frame-4 {
+      0%, 49.98% { opacity: 0; }
+      50%, 66.65% { opacity: 1; }
+      66.67%, 100% { opacity: 0; }
+    }
+
+    @keyframes person-frame-5 {
+      0%, 66.65% { opacity: 0; }
+      66.67%, 83.31% { opacity: 1; }
+      83.33%, 100% { opacity: 0; }
+    }
+
+    @keyframes person-frame-6 {
+      0%, 83.31% { opacity: 0; }
+      83.33%, 100% { opacity: 1; }
+    }
+
+    @keyframes person-sequence-out {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    @keyframes person-standing-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .invite-screen.entering.exiting .post-entry-chat {
+      opacity: 0;
+      translate: 0 -3px;
+      transition:
+        translate .5s ease,
+        opacity .4s ease;
+      transition-delay: 0s;
+    }
+
+    .invite-screen.entering.exiting .entry-character-group {
+      opacity: 0;
+      animation: none;
+    }
+
+    .exit-scene {
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .invite-screen.exiting .exit-scene {
+      opacity: 1;
+    }
+
+    .exit-shadow {
+      position: absolute;
+      top: 758px;
+      left: 117px;
+      z-index: 1;
+      width: 169px;
+      height: 26px;
+      opacity: 1;
+    }
+
+    .invite-screen.exiting .exit-shadow {
+      animation: exit-shadow-motion 3.7s linear forwards;
+    }
+
+    .exit-person-motion,
+    .exit-ahxin-motion {
+      position: absolute;
+      inset: 0;
+      will-change: transform, opacity;
+    }
+
+    .exit-person-motion {
+      z-index: 3;
+      transform-origin: 102.2px 776px;
+    }
+
+    .invite-screen.exiting .exit-person-motion {
+      animation: exit-person-motion 3.7s linear forwards;
+    }
+
+    .exit-person-frame {
+      position: absolute;
+      top: 596px;
+      left: 184px;
+      display: block;
+      width: 104px;
+      height: 194px;
+      opacity: 0;
+    }
+
+    .exit-person-frame-needs-flip {
+      transform: rotate(180deg) scaleY(-1);
+    }
+
+    .invite-screen.exiting .exit-person-frame-1 {
+      animation: person-frame-1 1.4s steps(1, end) infinite;
+    }
+
+    .invite-screen.exiting .exit-person-frame-2 {
+      animation: person-frame-2 1.4s steps(1, end) infinite;
+    }
+
+    .invite-screen.exiting .exit-person-frame-3 {
+      animation: person-frame-3 1.4s steps(1, end) infinite;
+    }
+
+    .invite-screen.exiting .exit-person-frame-4 {
+      animation: person-frame-4 1.4s steps(1, end) infinite;
+    }
+
+    .invite-screen.exiting .exit-person-frame-5 {
+      animation: person-frame-5 1.4s steps(1, end) infinite;
+    }
+
+    .invite-screen.exiting .exit-person-frame-6 {
+      animation: person-frame-6 1.4s steps(1, end) infinite;
+    }
+
+    .exit-ahxin-motion {
+      z-index: 4;
+      transform-origin: 79.86px 772.98px;
+    }
+
+    .invite-screen.exiting .exit-ahxin-motion {
+      animation: exit-ahxin-motion 3.7s linear forwards;
+    }
+
+    .exit-ahxin-walk {
+      position: absolute;
+      top: 689px;
+      left: 125.16px;
+      width: 126px;
+      height: 122px;
+      transform: scale(.72385);
+      transform-origin: top left;
+    }
+
+    .invite-screen.exiting .exit-ip-frame.walk-frame-1 {
+      animation: home-frame-1 1.4s steps(1, end) infinite;
+    }
+
+    .invite-screen.exiting .exit-ip-frame.walk-frame-2 {
+      animation: home-frame-2 1.4s steps(1, end) infinite;
+    }
+
+    .invite-screen.exiting .exit-ip-frame.walk-frame-3 {
+      animation: home-frame-3 1.4s steps(1, end) infinite;
+    }
+
+    .invite-screen.exiting .exit-ip-frame.walk-frame-4 {
+      animation: home-frame-4 1.4s steps(1, end) infinite;
+    }
+
+    .invite-screen.exiting .exit-ip-frame.walk-frame-5 {
+      animation: home-frame-5 1.4s steps(1, end) infinite;
+    }
+
+    .invite-screen.exiting .exit-ip-frame.walk-frame-6 {
+      animation: home-frame-6 1.4s steps(1, end) infinite;
+    }
+
+    .exit-door-layer {
+      position: absolute;
+      transform: translateX(124px);
+      will-change: transform;
+    }
+
+    .exit-door-back {
+      top: 658px;
+      left: 273px;
+      z-index: 2;
+      width: 61px;
+      height: 126px;
+      border-radius: 2px;
+      background: #303436;
+      transform-origin: center;
+    }
+
+    .exit-door-gradient {
+      top: 658px;
+      left: 273px;
+      z-index: 5;
+      width: 61px;
+      height: 126px;
+      background: linear-gradient(to left, #303436, rgba(48, 52, 54, 0));
+    }
+
+    .exit-door-panel {
+      top: 658.27px;
+      left: 308px;
+      z-index: 5;
+      display: block;
+      width: 26px;
+      height: 138.456px;
+    }
+
+    .exit-door-mask {
+      top: 658px;
+      left: 334px;
+      z-index: 5;
+      width: 63px;
+      height: 126px;
+      background: #fff;
+    }
+
+    .invite-screen.exiting .exit-door-layer {
+      animation: exit-door-in 1.2s ease-out 1s forwards;
+    }
+
+    .invite-screen.exiting .exit-door-back {
+      animation:
+        exit-door-in 1.2s ease-out 1s forwards,
+        exit-door-expand 1s ease-in 3.7s forwards;
+    }
+
+    .invite-screen.exiting .exit-door-gradient,
+    .invite-screen.exiting .exit-door-panel,
+    .invite-screen.exiting .exit-door-mask {
+      animation:
+        exit-door-in 1.2s ease-out 1s forwards,
+        exit-door-front-out .2s ease 3.7s forwards;
+    }
+
+    .invite-screen.exiting {
+      animation: screen-darken 1s ease 3.7s forwards;
+    }
+
+    .invite-screen.exiting .wechat-status-bar,
+    .invite-screen.exiting .wechat-nav {
+      animation: header-to-white 1s ease 3.7s forwards;
+    }
+
+    @keyframes exit-person-motion {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+        animation-timing-function: ease-in;
+      }
+      59.46% {
+        opacity: 1;
+        transform: scale(.59545);
+        animation-timing-function: linear;
+      }
+      93.24% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(209px) scale(.59545);
+      }
+    }
+
+    @keyframes exit-ahxin-motion {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+        animation-timing-function: ease-in;
+      }
+      59.46% {
+        opacity: 1;
+        transform: scale(.57892);
+        animation-timing-function: linear;
+      }
+      93.24% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(217px) scale(.57892);
+      }
+    }
+
+    @keyframes exit-shadow-motion {
+      0% {
+        left: 117px;
+        width: 169px;
+        opacity: 1;
+        animation-timing-function: ease-in;
+      }
+      59.46% {
+        left: 94px;
+        width: 133px;
+        opacity: 1;
+        animation-timing-function: linear;
+      }
+      86.49% {
+        opacity: 1;
+      }
+      100% {
+        left: 311px;
+        width: 133px;
+        opacity: 0;
+      }
+    }
+
+    @keyframes exit-door-in {
+      from { transform: translateX(124px); }
+      to { transform: translateX(0); }
+    }
+
+    @keyframes exit-door-expand {
+      0% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+      99% {
+        opacity: 1;
+        transform: translateX(0) scale(13.11475);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(0) scale(13.11475);
+      }
+    }
+
+    @keyframes exit-door-front-out {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    @keyframes screen-darken {
+      0%, 90% { background-color: #fff; }
+      100% { background-color: #303436; }
+    }
+
+    @keyframes header-to-white {
+      0%, 90% { color: #000; }
+      100% { color: #fff; }
+    }
+
+    .split-scene {
+      position: absolute;
+      inset: 0;
+      z-index: 9;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .split-background {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      opacity: 0;
+      background: linear-gradient(to bottom, #070808, #2d363c);
+    }
+
+    .invite-screen.exiting .split-background {
+      animation: split-layer-in 1.2s ease 7.02s forwards;
+    }
+
+    .split-linked-rectangle {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      z-index: 5;
+      display: block;
+      width: 390px;
+      height: 179px;
+      opacity: 0;
+      pointer-events: none;
+      will-change: opacity;
+    }
+
+    .invite-screen.exiting .split-linked-rectangle {
+      animation: split-layer-in 1.2s ease 7.02s forwards;
+    }
+
+    .invite-screen.carousel-ready .exhibition-fixed-mask {
+      animation: none;
+      opacity: 1;
+    }
+
+    .split-person-walk-motion,
+    .split-ahxin-walk-motion {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    .split-person-walk-motion {
+      transform-origin: 102.2px 776px;
+    }
+
+    .invite-screen.exiting .split-person-walk-motion {
+      animation:
+        split-person-travel 2.2s linear 4.7s forwards,
+        split-layer-in .01s linear 4.7s forwards,
+        split-layer-out .12s ease 6.9s forwards;
+    }
+
+    .split-person-frame {
+      position: absolute;
+      top: 596px;
+      left: 184px;
+      display: block;
+      width: 104px;
+      height: 194px;
+      opacity: 0;
+    }
+
+    .split-person-frame-needs-flip {
+      transform: rotate(180deg) scaleY(-1);
+    }
+
+    .invite-screen.exiting .split-person-frame-1 {
+      animation: person-frame-1 1.4s steps(1, end) 4.7s infinite;
+    }
+
+    .invite-screen.exiting .split-person-frame-2 {
+      animation: person-frame-2 1.4s steps(1, end) 4.7s infinite;
+    }
+
+    .invite-screen.exiting .split-person-frame-3 {
+      animation: person-frame-3 1.4s steps(1, end) 4.7s infinite;
+    }
+
+    .invite-screen.exiting .split-person-frame-4 {
+      animation: person-frame-4 1.4s steps(1, end) 4.7s infinite;
+    }
+
+    .invite-screen.exiting .split-person-frame-5 {
+      animation: person-frame-5 1.4s steps(1, end) 4.7s infinite;
+    }
+
+    .invite-screen.exiting .split-person-frame-6 {
+      animation: person-frame-6 1.4s steps(1, end) 4.7s infinite;
+    }
+
+    .split-ahxin-walk-motion {
+      z-index: 3;
+      transform-origin: 79.86px 772.98px;
+    }
+
+    .invite-screen.exiting .split-ahxin-walk-motion {
+      animation:
+        split-ahxin-travel 2.2s linear 4.7s forwards,
+        split-layer-in .01s linear 4.7s forwards,
+        split-layer-out .12s ease 6.9s forwards;
+    }
+
+    .split-ahxin-walk {
+      position: absolute;
+      top: 689px;
+      left: 125.16px;
+      width: 126px;
+      height: 122px;
+      transform: scale(.72385);
+      transform-origin: top left;
+    }
+
+    .invite-screen.exiting .split-ip-frame.walk-frame-1 {
+      animation: home-frame-1 1.4s steps(1, end) 4.7s infinite;
+    }
+
+    .invite-screen.exiting .split-ip-frame.walk-frame-2 {
+      animation: home-frame-2 1.4s steps(1, end) 4.7s infinite;
+    }
+
+    .invite-screen.exiting .split-ip-frame.walk-frame-3 {
+      animation: home-frame-3 1.4s steps(1, end) 4.7s infinite;
+    }
+
+    .invite-screen.exiting .split-ip-frame.walk-frame-4 {
+      animation: home-frame-4 1.4s steps(1, end) 4.7s infinite;
+    }
+
+    .invite-screen.exiting .split-ip-frame.walk-frame-5 {
+      animation: home-frame-5 1.4s steps(1, end) 4.7s infinite;
+    }
+
+    .invite-screen.exiting .split-ip-frame.walk-frame-6 {
+      animation: home-frame-6 1.4s steps(1, end) 4.7s infinite;
+    }
+
+    .split-final-pose {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      opacity: 0;
+    }
+
+    .invite-screen.exiting .split-final-pose {
+      animation: split-layer-in .12s ease 6.9s forwards;
+    }
+
+    .split-ahxin-body {
+      position: absolute;
+      top: 709.42px;
+      left: 144.56px;
+      width: 49.312px;
+      height: 44.537px;
+    }
+
+    .split-ahxin-hearts-slot,
+    .split-ahxin-foot-slot {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .split-ahxin-hearts-slot {
+      top: 729.05px;
+      left: 158.19px;
+      width: 26.147px;
+      height: 20.277px;
+    }
+
+    .split-ahxin-hearts {
+      width: 23.667px;
+      height: 16.444px;
+      transform: rotate(170.08deg) scaleY(-1);
+    }
+
+    .split-ahxin-foot-right-slot {
+      top: 741.94px;
+      left: 175.18px;
+      width: 17.851px;
+      height: 15.151px;
+    }
+
+    .split-ahxin-foot-left-slot {
+      top: 745.1px;
+      left: 156.17px;
+      width: 14.237px;
+      height: 17.135px;
+    }
+
+    .split-ahxin-foot {
+      width: 13.366px;
+      height: 16.435px;
+    }
+
+    .split-ahxin-foot-right-slot .split-ahxin-foot {
+      transform: rotate(83.46deg) scaleY(-1);
+    }
+
+    .split-ahxin-foot-left-slot .split-ahxin-foot {
+      transform: rotate(-176.89deg) scaleY(-1);
+    }
+
+    .split-person-pose {
+      position: absolute;
+      top: 693px;
+      left: 200px;
+      display: block;
+      width: 38.175px;
+      height: 73.003px;
+    }
+
+    .split-zuoyi {
+      position: absolute;
+      top: 738px;
+      left: 0;
+      z-index: 4;
+      display: block;
+      width: 390px;
+      height: 39px;
+      opacity: 0;
+      transform: translateX(195px);
+      will-change: transform, opacity;
+    }
+
+    .invite-screen.exiting .split-zuoyi {
+      animation: split-zuoyi-in 2.2s cubic-bezier(.17, .02, .78, .98) 4.7s forwards;
+    }
+
+    .exhibition-reveal {
+      opacity: 0;
+      transform: translateY(5px);
+      will-change: opacity, transform;
+    }
+
+    .invite-screen.exiting .exhibition-reveal {
+      animation: exhibition-content-in 1s cubic-bezier(.29, .02, .28, .96) 8.72s forwards;
+    }
+
+    .invite-screen.carousel-ready .exhibition-reveal {
+      animation: none;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .invite-screen.carousel-ready .split-scene {
+      cursor: grab;
+      pointer-events: auto;
+      touch-action: pan-y;
+    }
+
+    .invite-screen.carousel-ready .split-scene.is-dragging {
+      cursor: grabbing;
+    }
+
+    .exhibition-backdrops {
+      position: absolute;
+      top: 0;
+      left: -312px;
+      z-index: 0;
+      width: 1014px;
+      height: 766px;
+      overflow: hidden;
+    }
+
+    .exhibition-backdrop-layer {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      will-change: opacity;
+    }
+
+    .exhibition-backdrop-layer img {
+      position: absolute;
+      display: block;
+      max-width: none;
+      opacity: .2;
+      pointer-events: none;
+      -webkit-user-drag: none;
+      user-select: none;
+    }
+
+    .exhibition-backdrop-layer-1 img {
+      top: -23.65%;
+      left: -22.37%;
+      width: 127.4%;
+      height: 186.32%;
+    }
+
+    .exhibition-backdrop-layer-2 img {
+      top: -30.67%;
+      left: -30.94%;
+      width: 154.82%;
+      height: 215.75%;
+    }
+
+    .exhibition-ui {
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      pointer-events: none;
+      will-change: opacity, transform;
+    }
+
+    .exhibition-title {
+      position: absolute;
+      top: 116px;
+      left: 0;
+      z-index: 5;
+      width: 390px;
+      margin: 0;
+      color: rgba(255, 255, 255, .9);
+      font-size: 22px;
+      font-weight: 900;
+      line-height: normal;
+      letter-spacing: 1.1px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .exhibition-memory-count {
+      position: absolute;
+      top: 154px;
+      left: 93px;
+      z-index: 5;
+      display: flex;
+      width: 204.467px;
+      height: 20px;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: #14cc67;
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: .25px;
+      white-space: nowrap;
+    }
+
+    .exhibition-memory-label {
+      opacity: .6;
+    }
+
+    .exhibition-memory-number {
+      font-family: "Arial Rounded MT Bold", "SF Pro Rounded", sans-serif;
+      font-size: 17.067px;
+      font-weight: 700;
+      letter-spacing: .341px;
+    }
+
+    .exhibition-carousel {
+      position: absolute;
+      top: 193px;
+      left: 0;
+      z-index: 5;
+      width: 390px;
+      height: 348px;
+      perspective: 900px;
+      perspective-origin: 50% 50%;
+      transform-style: preserve-3d;
+      outline: none;
+      touch-action: pan-y;
+    }
+
+    .exhibition-projection-card {
+      position: absolute;
+      inset: 0;
+      width: 390px;
+      height: 348px;
+      backface-visibility: hidden;
+      transform-origin: 50% 50%;
+      will-change: transform, opacity, clip-path;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .exhibition-card-mask {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      width: 390px;
+      height: 348px;
+      background: #fff;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      mask-position: center;
+      -webkit-mask-size: 390px 348px;
+      mask-size: 390px 348px;
+    }
+
+    .exhibition-card-mask-1 {
+      -webkit-mask-image: url("assets/figma-exhibition/card-mask.png");
+      mask-image: url("assets/figma-exhibition/card-mask.png");
+    }
+
+    .exhibition-card-mask-2 {
+      -webkit-mask-image: url("assets/figma-exhibition/slide-2-mask.png");
+      mask-image: url("assets/figma-exhibition/slide-2-mask.png");
+    }
+
+    .exhibition-card-image-1 {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      -webkit-user-drag: none;
+    }
+
+    .exhibition-card-image-2 {
+      position: absolute;
+      top: 2.97%;
+      left: 10.85%;
+      display: block;
+      width: 78.1%;
+      height: 92.15%;
+      max-width: none;
+      pointer-events: none;
+      -webkit-user-drag: none;
+    }
+
+    .exhibition-announcer {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .exhibition-vote {
+      position: absolute;
+      top: 565px;
+      left: 133px;
+      z-index: 5;
+      width: 124px;
+      height: 124px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #fff;
+      font: inherit;
+      outline: none;
+      pointer-events: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .invite-screen.carousel-ready .exhibition-vote:not(:disabled) {
+      cursor: pointer;
+      pointer-events: auto;
+    }
+
+    .exhibition-vote-heart {
+      position: absolute;
+      top: 0;
+      left: 3px;
+      display: block;
+      width: 118.459px;
+      height: 108.546px;
+      transform-origin: 50% 48%;
+      will-change: transform;
+    }
+
+    .exhibition-vote.is-popping .exhibition-vote-heart {
+      animation: vote-heart-pop .48s cubic-bezier(.2, .82, .24, 1);
+    }
+
+    .exhibition-vote-title,
+    .exhibition-vote-brand {
+      position: absolute;
+      left: 0;
+      width: 124px;
+      margin: 0;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .exhibition-vote-title {
+      top: 19.98px;
+      font-size: 19.873px;
+      font-weight: 800;
+      line-height: 1.4;
+      letter-spacing: .994px;
+    }
+
+    .exhibition-vote-brand {
+      top: 50.73px;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: normal;
+      letter-spacing: .6px;
+      opacity: .6;
+    }
+
+    .exhibition-progress {
+      position: absolute;
+      top: 763px;
+      left: 0;
+      z-index: 7;
+      width: 390px;
+      height: 49px;
+      color: rgba(255, 255, 255, .3);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .exhibition-progress p {
+      position: absolute;
+      top: 0;
+      left: 147px;
+      width: 97px;
+      height: 20px;
+      margin: 0;
+      line-height: 20px;
+      text-align: center;
+    }
+
+    .exhibition-progress-current,
+    .exhibition-progress-quota {
+      color: inherit;
+      font: inherit;
+      font-weight: 700;
+      transition: color .24s ease;
+    }
+
+    .exhibition-progress-current.is-active,
+    .exhibition-progress.is-complete .exhibition-progress-quota {
+      color: #53ef72;
+    }
+
+    .exhibition-complete {
+      position: absolute;
+      top: 28px;
+      left: 157.332px;
+      display: block;
+      width: 76.335px;
+      height: 21px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      outline: none;
+      pointer-events: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .exhibition-complete span {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 56px;
+      height: 20px;
+      line-height: 20px;
+      text-align: center;
+    }
+
+    .exhibition-complete img {
+      position: absolute;
+      top: 1px;
+      left: 56.335px;
+      width: 20px;
+      height: 20px;
+    }
+
+    .exhibition-progress.is-complete .exhibition-complete {
+      color: #53ef72;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+
+    .summary-scene {
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+      visibility: hidden;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .invite-screen.summary-transitioning .summary-scene,
+    .invite-screen.summary-ready .summary-scene {
+      visibility: visible;
+    }
+
+    .summary-cinema-layer,
+    .summary-final-pose {
+      position: absolute;
+      opacity: 0;
+    }
+
+    .summary-linked-rectangle {
+      bottom: 0;
+      left: 0;
+      width: 390px;
+      height: 179px;
+    }
+
+    .summary-linked-rectangle {
+      z-index: 2;
+    }
+
+    .summary-veil {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      z-index: 1;
+      width: 390px;
+      height: 689px;
+      opacity: 0;
+      background: radial-gradient(120% 88% at 50% 112%, rgba(45, 54, 60, 0) 0%, rgba(7, 8, 8, .28) 52%, rgba(7, 8, 8, .62) 100%);
+      pointer-events: none;
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 240px, #000 100%);
+      mask-image: linear-gradient(to bottom, transparent 0, #000 240px, #000 100%);
+    }
+
+    .summary-scene.credits-playing .summary-veil {
+      opacity: 1;
+      transition: opacity .8s ease;
+    }
+
+    .summary-final-pose {
+      inset: 0;
+      z-index: 3;
+    }
+
+    .summary-seats {
+      top: 733.36px;
+      left: -59.083px;
+      z-index: 4;
+      width: 509.167px;
+      height: 43.643px;
+    }
+
+    .summary-mask {
+      bottom: 0;
+      left: 0;
+      z-index: 5;
+      width: 390px;
+      height: 179px;
+    }
+
+    .summary-ahxin-body {
+      position: absolute;
+      top: 701.38px;
+      left: 138.5px;
+      width: 55.182px;
+      height: 49.839px;
+    }
+
+    .summary-ahxin-hearts-slot,
+    .summary-ahxin-foot-slot {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .summary-ahxin-hearts-slot {
+      top: 723.33px;
+      left: 153.74px;
+      width: 29.26px;
+      height: 22.692px;
+    }
+
+    .summary-ahxin-hearts {
+      width: 26.484px;
+      height: 18.403px;
+      transform: rotate(170.08deg) scaleY(-1);
+    }
+
+    .summary-ahxin-foot-right-slot {
+      top: 737.76px;
+      left: 172.76px;
+      width: 19.976px;
+      height: 16.955px;
+    }
+
+    .summary-ahxin-foot-left-slot {
+      top: 741.31px;
+      left: 151.49px;
+      width: 15.932px;
+      height: 19.175px;
+    }
+
+    .summary-ahxin-foot {
+      width: 14.957px;
+      height: 18.392px;
+    }
+
+    .summary-ahxin-foot-right-slot .summary-ahxin-foot {
+      transform: rotate(83.46deg) scaleY(-1);
+    }
+
+    .summary-ahxin-foot-left-slot .summary-ahxin-foot {
+      transform: rotate(-176.89deg) scaleY(-1);
+    }
+
+    .summary-person {
+      position: absolute;
+      top: 683px;
+      left: 200.54px;
+      width: 42.719px;
+      height: 81.693px;
+    }
+
+    .summary-content {
+      position: absolute;
+      inset: 0;
+      z-index: 7;
+      color: rgba(255, 255, 255, .9);
+    }
+
+    .summary-line {
+      position: absolute;
+      left: 0;
+      width: 390px;
+      margin: 0;
+      overflow: hidden;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: normal;
+      letter-spacing: 2.64px;
+      text-align: center;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .summary-line-1 { top: 200px; }
+    .summary-line-2 { top: 276px; }
+    .summary-line-3 { top: 359px; }
+    .summary-line-4 { top: 435px; }
+
+    .summary-line .summary-accent {
+      color: #2bd97e;
+    }
+
+    .summary-line-2 .summary-accent {
+      font-size: 28px;
+    }
+
+    .summary-line .char {
+      display: inline-block;
+      opacity: 0;
+      filter: blur(2px);
+      transform: translateY(3px);
+      transition:
+        opacity 1s ease,
+        transform 1s cubic-bezier(.22, 1, .36, 1),
+        filter .9s ease;
+      white-space: pre;
+      will-change: opacity, transform, filter;
+    }
+
+    .invite-screen.summary-ready .summary-line .char {
+      opacity: 1;
+      filter: blur(0);
+      transform: translateY(0);
+    }
+
+    .summary-cta {
+      position: absolute;
+      top: 570px;
+      left: 85px;
+      z-index: 7;
+      width: 219px;
+      height: 75px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #fff;
+      font: inherit;
+      opacity: 0;
+      filter: blur(2px);
+      outline: none;
+      pointer-events: none;
+      transform: translateY(5px);
+      transition:
+        opacity .8s ease 3.1s,
+        transform .8s cubic-bezier(.22, 1, .36, 1) 3.1s,
+        filter .7s ease 3.1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .summary-cta-label {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      width: 219px;
+      height: 67px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9.6px;
+      background: #2bd97e;
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1.6;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    .summary-cta-tail {
+      position: absolute;
+      top: 66px;
+      left: 102.572px;
+      display: block;
+      width: 13.856px;
+      height: 9px;
+      background: #2bd97e;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+    }
+
+    .invite-screen.summary-ready .summary-cta {
+      cursor: pointer;
+      opacity: 1;
+      filter: blur(0);
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .invite-screen.credits-playing .summary-cta {
+      pointer-events: none;
+    }
+
+    .summary-scene.credits-playing .summary-content {
+      opacity: 0;
+      filter: blur(2px);
+      pointer-events: none;
+      transition:
+        opacity .8s ease,
+        filter .7s ease;
+    }
+
+    .credits-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      -webkit-mask-image: linear-gradient(to bottom, transparent 72px, rgba(0, 0, 0, .4) 168px, #000 268px, #000 calc(100% - 210px), transparent 100%);
+      mask-image: linear-gradient(to bottom, transparent 72px, rgba(0, 0, 0, .4) 168px, #000 268px, #000 calc(100% - 210px), transparent 100%);
+    }
+
+    .summary-scene.credits-playing .credits-layer {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .summary-scene.credits-done .credits-layer {
+      opacity: 0;
+      transition: opacity 1.2s ease;
+    }
+
+    .credits-track {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 390px;
+      padding: 48px 36px 200px;
+      color: rgba(255, 255, 255, .9);
+      text-align: center;
+      will-change: transform;
+    }
+
+    .summary-scene.credits-playing .credits-track {
+      animation: credits-roll 34s linear forwards;
+    }
+
+    .summary-scene.credits-static .credits-track {
+      top: 168px;
+      animation: none;
+      transform: none;
+    }
+
+    .credits-block {
+      margin: 0 0 108px;
+    }
+
+    .credits-block p,
+    .credits-block h3 {
+      margin: 0;
+    }
+
+    .credits-kicker,
+    .credits-relation-name,
+    .credits-accent {
+      color: #2bd97e;
+    }
+
+    .credits-kicker {
+      margin-bottom: 18px;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 3.2px;
+    }
+
+    .credits-opening p + p,
+    .credits-reflection p + p,
+    .credits-statement p + p {
+      margin-top: 14px;
+    }
+
+    .credits-opening p:not(.credits-kicker),
+    .credits-reflection p,
+    .credits-statement p,
+    .credits-thanks-name {
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.45;
+      letter-spacing: 2.64px;
+    }
+
+    .credits-count,
+    .credits-role {
+      margin-bottom: 16px;
+      color: rgba(255, 255, 255, .42);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 3px;
+    }
+
+    .credits-relation-name {
+      margin-bottom: 14px;
+      font-size: 36px;
+      font-weight: 900;
+      line-height: 1.2;
+      letter-spacing: 4px;
+    }
+
+    .credits-line,
+    .credits-sources {
+      color: rgba(255, 255, 255, .38);
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.7;
+      letter-spacing: 1.2px;
+    }
+
+    .credits-accent {
+      font-size: 24px;
+    }
+
+    .credits-cast .credits-sources + .credits-sources {
+      margin-top: 6px;
+    }
+
+    .credits-thanks .credits-role {
+      margin-top: 36px;
+    }
+
+    .credits-thanks .credits-role:first-child {
+      margin-top: 0;
+    }
+
+    @keyframes credits-roll {
+      from { transform: translate3d(0, 0, 0); }
+      to { transform: translate3d(0, calc(-100% - 720px), 0); }
+    }
+
+    .farewell-scene {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      overflow: hidden;
+      background: #fff;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .invite-screen.farewell-transitioning .farewell-scene,
+    .invite-screen.farewell-ready .farewell-scene,
+    .invite-screen.finale-ready .farewell-scene {
+      visibility: visible;
+    }
+
+    .invite-screen.farewell-transitioning .farewell-scene {
+      opacity: 1;
+      transition: opacity 1s ease;
+    }
+
+    .invite-screen.farewell-transitioning .wechat-status-bar,
+    .invite-screen.farewell-transitioning .wechat-nav,
+    .invite-screen.farewell-ready .wechat-status-bar,
+    .invite-screen.farewell-ready .wechat-nav,
+    .invite-screen.finale-ready .wechat-status-bar,
+    .invite-screen.finale-ready .wechat-nav {
+      animation: none;
+      color: #191919;
+      transition: color 1s ease;
+    }
+
+    .farewell-cast {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+    }
+
+    .farewell-shadow {
+      position: absolute;
+      top: 775.2px;
+      left: 135.87px;
+      width: 128.715px;
+      height: 19.802px;
+    }
+
+    .farewell-ahxin-body {
+      position: absolute;
+      top: 718.19px;
+      left: 131.61px;
+      width: 69.652px;
+      height: 65.145px;
+      object-fit: contain;
+      transform: rotate(171.97deg) scaleY(-1);
+    }
+
+    .farewell-ahxin-hearts {
+      position: absolute;
+      top: 745.46px;
+      left: 161.9px;
+      width: 33.209px;
+      height: 25.753px;
+      object-fit: contain;
+      transform: rotate(170.08deg) scaleY(-1);
+    }
+
+    .farewell-ahxin-leg {
+      position: absolute;
+      top: 765.09px;
+      width: 10.704px;
+      height: 20.218px;
+    }
+
+    .farewell-ahxin-leg-right {
+      left: 172.74px;
+    }
+
+    .farewell-ahxin-leg-left {
+      left: 154.9px;
+      transform: rotate(180deg) scaleY(-1);
+    }
+
+    .farewell-person {
+      position: absolute;
+      top: 664px;
+      left: 200.61px;
+      width: 53.519px;
+      height: 124.958px;
+    }
+
+    .farewell-chat {
+      position: absolute;
+      left: 50%;
+      z-index: 3;
+      color: #000;
+      opacity: 0;
+      translate: -50% 3px;
+      pointer-events: none;
+      transition:
+        translate .8s cubic-bezier(.29, .02, .28, .96),
+        opacity .3s cubic-bezier(.29, .02, .28, .96);
+      will-change: translate, opacity;
+    }
+
+    .farewell-chat-1 {
+      top: 297px;
+      width: 289.727px;
+      height: 85.347px;
+      margin-left: 2.86px;
+      --chat-delay: 1.6s;
+    }
+
+    .farewell-chat-2 {
+      top: 401px;
+      width: 268.901px;
+      height: 93.766px;
+      margin-left: 2.86px;
+      --chat-delay: 2.7s;
+    }
+
+    .farewell-chat-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .farewell-chat-1 .farewell-chat-inner {
+      transform: rotate(2.07deg);
+    }
+
+    .farewell-chat-2 .farewell-chat-inner {
+      transform: rotate(-4.12deg);
+    }
+
+    .farewell-chat .chat-tail {
+      left: -33.6px;
+    }
+
+    .farewell-chat .chat-card {
+      flex: 1;
+      justify-content: center;
+    }
+
+    .invite-screen.farewell-ready .farewell-chat {
+      opacity: 1;
+      translate: -50% 0;
+      transition-delay: var(--chat-delay);
+    }
+
+    .invite-screen.farewell-ready .farewell-chat .char {
+      opacity: 1;
+      filter: blur(0);
+      transform: translateY(0);
+    }
+
+    .invite-screen.finale-ready .farewell-chat {
+      opacity: 0;
+      transition: opacity .5s ease;
+    }
+
+    .finale-content {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      opacity: 0;
+      transform: translateY(5px);
+      pointer-events: none;
+    }
+
+    .invite-screen.finale-ready .finale-content {
+      opacity: 1;
+      transform: translateY(0);
+      transition:
+        opacity .8s ease,
+        transform .8s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .finale-title {
+      position: absolute;
+      top: 108px;
+      left: 115px;
+      margin: 0;
+      color: rgba(0, 0, 0, .9);
+      font-size: 17px;
+      font-weight: 600;
+      line-height: normal;
+      letter-spacing: .85px;
+      white-space: nowrap;
+    }
+
+    .finale-card {
+      position: absolute;
+      top: 150px;
+      left: 52px;
+      display: block;
+      width: 286px;
+      height: 400px;
+      border-radius: 12px;
+    }
+
+    .finale-actions {
+      position: absolute;
+      top: 565px;
+      left: 24px;
+      display: flex;
+      width: 342px;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 16px;
+      gap: 16px;
+    }
+
+    .finale-save {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 0;
+      color: #000;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: .25px;
+      white-space: nowrap;
+    }
+
+    .finale-save img {
+      display: block;
+      width: 16px;
+      height: 16px;
+    }
+
+    .finale-egg {
+      margin: 0;
+      color: rgba(0, 0, 0, .3);
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: .25px;
+      white-space: nowrap;
+    }
+
+    @keyframes vote-heart-pop {
+      0%, 100% { transform: scale(1); }
+      24% { transform: scale(.9, 1.08); }
+      52% { transform: scale(1.1, .93); }
+      76% { transform: scale(.97, 1.025); }
+    }
+
+    @keyframes split-person-travel {
+      from { transform: translate(-121px, -3px) scale(.59545); }
+      to { transform: translate(39px, -3px) scale(.59545); }
+    }
+
+    @keyframes split-ahxin-travel {
+      from { transform: translate(-122px, -4px) scale(.57892); }
+      to { transform: translate(38.47px, -4px) scale(.57892); }
+    }
+
+    @keyframes split-zuoyi-in {
+      from {
+        opacity: 1;
+        transform: translateX(195px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes split-layer-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes split-layer-out {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    @keyframes exhibition-content-in {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes hint-pulse {
+      0%, 100% { opacity: 1; transform: translateY(0); }
+      50% { opacity: .64; transform: translateY(-2px); }
+    }
+
+    .entry-shadow {
+      display: none;
+    }
+
+    .entry-ahxin {
+      position: absolute;
+      inset: 0;
+      display: none;
+    }
+
+    .entry-ahxin-body {
+      position: absolute;
+      top: 654.44px;
+      left: 136px;
+      width: 117.058px;
+      height: 107.101px;
+      object-fit: cover;
+      transform: rotate(180deg) scaleY(-1);
+    }
+
+    .entry-hearts-slot {
+      position: absolute;
+      top: 697.79px;
+      left: 165.53px;
+      display: flex;
+      width: 63.1px;
+      height: 48.875px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .entry-hearts {
+      width: 56.48px;
+      height: 39.24px;
+      transform: rotate(170.08deg) scaleY(-1);
+    }
+
+    .entry-leg-right,
+    .entry-leg-left {
+      position: absolute;
+      top: 735px;
+      width: 22.5px;
+      height: 39.5px;
+    }
+
+    .entry-leg-right {
+      left: 201.33px;
+    }
+
+    .entry-leg-left {
+      left: 165.33px;
+      transform: rotate(180deg) scaleY(-1);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        animation-delay: 0s !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="stage" id="stage">
+    <section class="invite-screen" data-node-id="3931:8562">
+      <div class="wechat-status-bar" aria-hidden="true">
+        <span class="status-time">9:41</span>
+        <div class="status-icons">
+          <span class="cellular-icon"><i></i><i></i><i></i><i></i></span>
+          <span class="wifi-icon"></span>
+          <span class="battery-icon"></span>
+        </div>
+      </div>
+
+      <nav class="wechat-nav" aria-label="页面导航">
+        <span class="home-close" aria-hidden="true"></span>
+        <span class="home-more" aria-hidden="true"><i></i><i></i><i></i></span>
+      </nav>
+
+      <div class="opening">
+        <div class="opening-chat-stack">
+          <div class="chat chat-1" data-node-id="3931:8902">
+            <img class="chat-tail" src="assets/figma-home/chat-tail.svg" width="76.8" height="9.60039" alt="">
+            <div class="chat-card">hi，<span class="accent">@momo酱</span></div>
+          </div>
+          <div class="chat chat-2" data-node-id="3931:8909">
+            <img class="chat-tail" src="assets/figma-home/chat-tail.svg" width="76.8" height="9.60039" alt="">
+            <div class="chat-card">我是阿心，又见面了</div>
+          </div>
+          <div class="chat chat-3" data-node-id="3931:8917">
+            <img class="chat-tail" src="assets/figma-home/chat-tail.svg" width="76.8" height="9.60039" alt="">
+            <div class="chat-card">今天是评选的&nbsp;<span class="accent" style="font-size:25px">10</span>&nbsp;周年</div>
+          </div>
+          <div class="chat chat-4" data-node-id="3931:8922">
+            <img class="chat-tail" src="assets/figma-home/chat-tail.svg" width="76.8" height="9.60039" alt="">
+            <div class="chat-card">我想邀请你...</div>
+          </div>
+        </div>
+
+        <div class="home-walker">
+          <img class="home-shadow" src="assets/figma-home/ahxin-shadow.svg" width="195" height="26" alt="">
+          <div class="home-ahxin" data-node-id="3939:15600" aria-label="走入画面的阿心">
+            <div class="walk-frame walk-frame-1">
+              <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
+              <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-b.svg" alt=""></div>
+              <div class="walk-leg-slot frame-1-leg-right"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
+              <div class="walk-leg-slot frame-1-leg-left"><img src="assets/figma-walk/frame1-leg-left.svg" alt=""></div>
+            </div>
+
+            <div class="walk-frame walk-frame-2">
+              <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
+              <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-a.svg" alt=""></div>
+              <div class="walk-leg-slot frame-2-leg-right"><img src="assets/figma-walk/frame2-leg-right.svg" alt=""></div>
+              <div class="walk-leg-slot frame-2-leg-left"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
+            </div>
+
+            <div class="walk-frame walk-frame-3">
+              <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
+              <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-b.svg" alt=""></div>
+              <div class="walk-leg-slot frame-3-leg-right"><img src="assets/figma-walk/frame3-leg-right.svg" alt=""></div>
+              <div class="walk-leg-slot frame-3-leg-left"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
+            </div>
+
+            <div class="walk-frame walk-frame-4">
+              <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
+              <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-c.svg" alt=""></div>
+              <div class="walk-leg-slot frame-4-leg-right"><img src="assets/figma-walk/frame4-leg-right.svg" alt=""></div>
+              <div class="walk-leg-slot frame-4-leg-left"><img src="assets/figma-walk/frame4-leg-left.svg" alt=""></div>
+            </div>
+
+            <div class="walk-frame walk-frame-5">
+              <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
+              <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-d.svg" alt=""></div>
+              <div class="walk-leg-slot frame-5-leg-left"><img src="assets/figma-walk/frame5-leg-left.svg" alt=""></div>
+              <div class="walk-leg-slot frame-5-leg-right"><img src="assets/figma-walk/frame5-leg-right.svg" alt=""></div>
+            </div>
+
+            <div class="walk-frame walk-frame-6">
+              <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
+              <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-c.svg" alt=""></div>
+              <div class="walk-leg-slot frame-6-leg-right"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
+              <div class="walk-leg-slot frame-6-leg-left"><img src="assets/figma-walk/frame1-leg-left.svg" alt=""></div>
+            </div>
+          </div>
+
+          <div class="home-standing-ahxin" aria-label="正面站定的阿心">
+            <img class="entry-ahxin-body" src="assets/figma-entry/ahxin-body.png" alt="">
+            <div class="entry-hearts-slot">
+              <img class="entry-hearts" src="assets/figma-entry/ahxin-small-hearts.svg" alt="">
+            </div>
+            <img class="entry-leg-right" src="assets/figma-entry/ahxin-leg-right.svg" alt="">
+            <img class="entry-leg-left" src="assets/figma-entry/ahxin-leg-left.svg" alt="">
+          </div>
+        </div>
+      </div>
+
+      <div class="entry" data-node-id="3931:8934">
+        <div class="entry-chat" data-node-id="3931:8948">
+          <img class="chat-tail" src="assets/figma-entry/chat-tail.svg" width="76.8" height="9.60039" alt="">
+          <div class="chat-card">和我一起看一场&nbsp;<span class="accent">放映礼</span>！</div>
+        </div>
+
+        <div class="entry-event" data-node-id="3931:9028">
+          <img class="top-heart" src="assets/figma-entry/top-heart.svg" width="140" height="140" alt="TOP">
+          <div class="event-copy">
+            <h1 class="event-title">朋友圈广告<br>十年放映礼</h1>
+            <div class="participation">
+              <p class="participation-count">\ <strong>1,208,982</strong> /</p>
+              <p class="participation-label">用户也在参与</p>
+            </div>
+          </div>
+        </div>
+
+        <p class="entry-hint" data-node-id="3931:8996" role="button" tabindex="0">轻触屏幕入场</p>
+
+        <div class="post-entry-chat post-entry-chat-1" data-node-id="3939:18907">
+          <div class="post-chat-inner">
+            <img class="chat-tail" src="assets/figma-enter-walk/post-chat-tail.svg" width="76.8" height="9.60039" alt="">
+            <div class="chat-card">放映快开始了</div>
+          </div>
+        </div>
+
+        <div class="post-entry-chat post-entry-chat-2" data-node-id="3939:18908">
+          <div class="post-chat-inner">
+            <img class="chat-tail" src="assets/figma-enter-walk/post-chat-tail.svg" width="76.8" height="9.60039" alt="">
+            <div class="chat-card">我们入场吧！</div>
+          </div>
+        </div>
+
+        <div class="entry-character-group" aria-label="阿心和观众一起入场">
+          <img class="transition-shadow" src="assets/figma-enter-walk/group-shadow.svg" alt="">
+
+          <div class="person-transition" aria-hidden="true">
+            <div class="person-frame-sequence">
+              <img class="person-walk-frame person-frame-1" src="assets/figma-enter-walk/person-frame-1.svg" alt="">
+              <img class="person-walk-frame person-frame-2" src="assets/figma-enter-walk/person-frame-2.svg" alt="">
+              <img class="person-walk-frame person-frame-3" src="assets/figma-enter-walk/person-frame-3.svg" alt="">
+              <img class="person-walk-frame person-frame-4" src="assets/figma-enter-walk/person-frame-4.svg" alt="">
+              <img class="person-walk-frame person-frame-5" src="assets/figma-enter-walk/person-frame-5.png" alt="">
+              <img class="person-walk-frame person-frame-6" src="assets/figma-enter-walk/person-frame-6.svg" alt="">
+            </div>
+            <img class="person-standing" src="assets/figma-enter-walk/person-standing.png" alt="">
+          </div>
+
+          <div class="target-ahxin" aria-hidden="true">
+            <img class="target-ahxin-leg-right" src="assets/figma-enter-walk/ahxin-leg-right.svg" alt="">
+            <img class="target-ahxin-leg-left" src="assets/figma-enter-walk/ahxin-leg-left.svg" alt="">
+            <div class="target-ahxin-body-slot">
+              <img class="target-ahxin-body" src="assets/figma-enter-walk/ahxin-body.png" alt="">
+            </div>
+            <div class="target-ahxin-hearts-slot">
+              <img class="target-ahxin-hearts" src="assets/figma-enter-walk/ahxin-hearts.svg" alt="">
+            </div>
+          </div>
+        </div>
+
+        <div class="exit-scene" aria-label="阿心和观众走向放映厅入口">
+          <img class="exit-shadow" src="assets/figma-enter-walk/group-shadow.svg" alt="">
+
+          <div class="exit-person-motion" aria-hidden="true">
+            <img class="exit-person-frame exit-person-frame-1" src="assets/figma-exit/person-right-6.svg" alt="">
+            <img class="exit-person-frame exit-person-frame-2 exit-person-frame-needs-flip" src="assets/figma-exit/person-right-2.svg" alt="">
+            <img class="exit-person-frame exit-person-frame-3 exit-person-frame-needs-flip" src="assets/figma-exit/person-right-3.svg" alt="">
+            <img class="exit-person-frame exit-person-frame-4" src="assets/figma-exit/person-right-4.png" alt="">
+            <img class="exit-person-frame exit-person-frame-5 exit-person-frame-needs-flip" src="assets/figma-enter-walk/person-frame-5.png" alt="">
+            <img class="exit-person-frame exit-person-frame-6" src="assets/figma-exit/person-right-6.svg" alt="">
+          </div>
+
+          <div class="exit-ahxin-motion" aria-hidden="true">
+            <div class="exit-ahxin-walk">
+              <div class="walk-frame walk-frame-1 exit-ip-frame">
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-b.svg" alt=""></div>
+                <div class="walk-leg-slot frame-1-leg-right"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
+                <div class="walk-leg-slot frame-1-leg-left"><img src="assets/figma-walk/frame1-leg-left.svg" alt=""></div>
+              </div>
+
+              <div class="walk-frame walk-frame-2 exit-ip-frame">
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-a.svg" alt=""></div>
+                <div class="walk-leg-slot frame-2-leg-right"><img src="assets/figma-walk/frame2-leg-right.svg" alt=""></div>
+                <div class="walk-leg-slot frame-2-leg-left"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
+              </div>
+
+              <div class="walk-frame walk-frame-3 exit-ip-frame">
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-b.svg" alt=""></div>
+                <div class="walk-leg-slot frame-3-leg-right"><img src="assets/figma-walk/frame3-leg-right.svg" alt=""></div>
+                <div class="walk-leg-slot frame-3-leg-left"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
+              </div>
+
+              <div class="walk-frame walk-frame-4 exit-ip-frame">
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-c.svg" alt=""></div>
+                <div class="walk-leg-slot frame-4-leg-right"><img src="assets/figma-walk/frame4-leg-right.svg" alt=""></div>
+                <div class="walk-leg-slot frame-4-leg-left"><img src="assets/figma-walk/frame4-leg-left.svg" alt=""></div>
+              </div>
+
+              <div class="walk-frame walk-frame-5 exit-ip-frame">
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-d.svg" alt=""></div>
+                <div class="walk-leg-slot frame-5-leg-left"><img src="assets/figma-walk/frame5-leg-left.svg" alt=""></div>
+                <div class="walk-leg-slot frame-5-leg-right"><img src="assets/figma-walk/frame5-leg-right.svg" alt=""></div>
+              </div>
+
+              <div class="walk-frame walk-frame-6 exit-ip-frame">
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-c.svg" alt=""></div>
+                <div class="walk-leg-slot frame-6-leg-right"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
+                <div class="walk-leg-slot frame-6-leg-left"><img src="assets/figma-walk/frame1-leg-left.svg" alt=""></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="exit-door-layer exit-door-back" aria-hidden="true"></div>
+          <div class="exit-door-layer exit-door-gradient" aria-hidden="true"></div>
+          <img class="exit-door-layer exit-door-panel" src="assets/figma-exit/door-panel.svg" alt="放映厅门">
+          <div class="exit-door-layer exit-door-mask" aria-hidden="true"></div>
+        </div>
+
+        <div class="split-scene" aria-label="广告展示页">
+          <div class="split-background" aria-hidden="true"></div>
+          <img class="split-linked-rectangle exhibition-fixed-mask" src="assets/figma-split/linked-rectangle-28.svg" alt="">
+
+          <div class="split-person-walk-motion" aria-hidden="true">
+            <img class="split-person-frame split-person-frame-1" src="assets/figma-exit/person-right-6.svg" alt="">
+            <img class="split-person-frame split-person-frame-2 split-person-frame-needs-flip" src="assets/figma-exit/person-right-2.svg" alt="">
+            <img class="split-person-frame split-person-frame-3 split-person-frame-needs-flip" src="assets/figma-exit/person-right-3.svg" alt="">
+            <img class="split-person-frame split-person-frame-4" src="assets/figma-exit/person-right-4.png" alt="">
+            <img class="split-person-frame split-person-frame-5 split-person-frame-needs-flip" src="assets/figma-enter-walk/person-frame-5.png" alt="">
+            <img class="split-person-frame split-person-frame-6" src="assets/figma-exit/person-right-6.svg" alt="">
+          </div>
+
+          <div class="split-ahxin-walk-motion" aria-hidden="true">
+            <div class="split-ahxin-walk">
+              <div class="walk-frame walk-frame-1 split-ip-frame">
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-b.svg" alt=""></div>
+                <div class="walk-leg-slot frame-1-leg-right"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
+                <div class="walk-leg-slot frame-1-leg-left"><img src="assets/figma-walk/frame1-leg-left.svg" alt=""></div>
+              </div>
+
+              <div class="walk-frame walk-frame-2 split-ip-frame">
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-a.svg" alt=""></div>
+                <div class="walk-leg-slot frame-2-leg-right"><img src="assets/figma-walk/frame2-leg-right.svg" alt=""></div>
+                <div class="walk-leg-slot frame-2-leg-left"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
+              </div>
+
+              <div class="walk-frame walk-frame-3 split-ip-frame">
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-b.svg" alt=""></div>
+                <div class="walk-leg-slot frame-3-leg-right"><img src="assets/figma-walk/frame3-leg-right.svg" alt=""></div>
+                <div class="walk-leg-slot frame-3-leg-left"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
+              </div>
+
+              <div class="walk-frame walk-frame-4 split-ip-frame">
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-c.svg" alt=""></div>
+                <div class="walk-leg-slot frame-4-leg-right"><img src="assets/figma-walk/frame4-leg-right.svg" alt=""></div>
+                <div class="walk-leg-slot frame-4-leg-left"><img src="assets/figma-walk/frame4-leg-left.svg" alt=""></div>
+              </div>
+
+              <div class="walk-frame walk-frame-5 split-ip-frame">
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-d.svg" alt=""></div>
+                <div class="walk-leg-slot frame-5-leg-left"><img src="assets/figma-walk/frame5-leg-left.svg" alt=""></div>
+                <div class="walk-leg-slot frame-5-leg-right"><img src="assets/figma-walk/frame5-leg-right.svg" alt=""></div>
+              </div>
+
+              <div class="walk-frame walk-frame-6 split-ip-frame">
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-c.svg" alt=""></div>
+                <div class="walk-leg-slot frame-6-leg-right"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
+                <div class="walk-leg-slot frame-6-leg-left"><img src="assets/figma-walk/frame1-leg-left.svg" alt=""></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="split-final-pose" aria-hidden="true">
+            <div class="split-ahxin-foot-slot split-ahxin-foot-right-slot">
+              <img class="split-ahxin-foot" src="assets/figma-split/ahxin-foot.png" alt="">
+            </div>
+            <div class="split-ahxin-foot-slot split-ahxin-foot-left-slot">
+              <img class="split-ahxin-foot" src="assets/figma-split/ahxin-foot.png" alt="">
+            </div>
+            <img class="split-ahxin-body" src="assets/figma-split/ahxin-body.svg" alt="">
+            <div class="split-ahxin-hearts-slot">
+              <img class="split-ahxin-hearts" src="assets/figma-split/ahxin-hearts.svg" alt="">
+            </div>
+            <img class="split-person-pose" src="assets/figma-split/person-pose.svg" alt="">
+          </div>
+
+          <img class="split-zuoyi" src="assets/figma-split/zuoyi.png" alt="">
+
+          <div class="exhibition-backdrops exhibition-reveal" aria-hidden="true"></div>
+
+          <div class="exhibition-ui exhibition-reveal">
+            <h2 class="exhibition-title">孙燕姿的清爽夏日，我也尽兴</h2>
+
+            <div class="exhibition-memory-count">
+              <span class="exhibition-memory-label">这一幕，已被记住</span>
+              <strong class="exhibition-memory-number">344,657</strong>
+              <span class="exhibition-memory-label">次</span>
+            </div>
+
+            <button class="exhibition-vote" type="button" tabindex="-1" aria-label="记住这幕，HUAWEI">
+              <img class="exhibition-vote-heart" src="assets/figma-exhibition/vote-heart.svg" alt="">
+              <span class="exhibition-vote-title">记住这幕</span>
+              <span class="exhibition-vote-brand">HUAWEI</span>
+            </button>
+          </div>
+
+          <div class="exhibition-carousel exhibition-reveal" tabindex="0" role="group" aria-roledescription="轮播图" aria-label="广告放映区，第 1 幕，共 15 幕"></div>
+
+          <div class="exhibition-progress exhibition-reveal">
+            <p>
+              <span>已记住 </span><strong class="exhibition-progress-current">0</strong><strong class="exhibition-progress-quota"> / 5</strong><span> 幕</span>
+            </p>
+            <button class="exhibition-complete" type="button" disabled tabindex="-1">
+              <span>完成投票</span>
+              <img class="exhibition-complete-arrow" src="assets/figma-exhibition/arrow-down.svg" alt="">
+            </button>
+          </div>
+
+          <p class="exhibition-announcer" aria-live="polite"></p>
+
+          <section class="summary-scene" aria-label="投票总结" aria-hidden="true">
+            <div class="credits-layer" aria-hidden="true">
+              <div class="credits-track">
+                <header class="credits-block credits-opening">
+                  <p class="credits-kicker">走到第十年</p>
+                  <p>我与广告的关系</p>
+                  <p>原来不止一种</p>
+                </header>
+
+                <section class="credits-block credits-relation">
+                  <p class="credits-count">有 2 幕</p>
+                  <h3 class="credits-relation-name">陪我尽兴</h3>
+                  <p class="credits-line">让平常日子热闹起来</p>
+                </section>
+
+                <section class="credits-block credits-relation">
+                  <p class="credits-count">有 1 幕</p>
+                  <h3 class="credits-relation-name">与我并肩</h3>
+                  <p class="credits-line">让我更敢走自己的路</p>
+                </section>
+
+                <section class="credits-block credits-relation">
+                  <p class="credits-count">有 1 幕</p>
+                  <h3 class="credits-relation-name">让我心动</h3>
+                  <p class="credits-line">让向往有了具体的模样</p>
+                </section>
+
+                <section class="credits-block credits-relation">
+                  <p class="credits-count">还有 1 幕</p>
+                  <h3 class="credits-relation-name">陪我出发</h3>
+                  <p class="credits-line">让我开始期待下一程</p>
+                </section>
+
+                <section class="credits-block credits-reflection">
+                  <p>回头看</p>
+                  <p>我记住的不只是广告</p>
+                  <p class="credits-accent">也是看广告时的自己</p>
+                </section>
+
+                <section class="credits-block credits-statement">
+                  <p>这十年</p>
+                  <p>广告出演生活</p>
+                  <p class="credits-accent">而我，从来不只是观众</p>
+                </section>
+
+                <section class="credits-block credits-cast">
+                  <p class="credits-role">这些关系，来自</p>
+                  <p class="credits-sources">霸王茶姬 · PUMA · 乐事</p>
+                  <p class="credits-sources">宝诗龙 · 方程豹 · 宝格丽</p>
+                </section>
+
+                <section class="credits-block credits-thanks">
+                  <p class="credits-role">陪伴放映</p>
+                  <p class="credits-thanks-name">阿心</p>
+                  <p class="credits-role">特别观众</p>
+                  <p class="credits-thanks-name">此刻的你</p>
+                </section>
+              </div>
+            </div>
+
+            <div class="summary-veil" aria-hidden="true"></div>
+            <img class="summary-cinema-layer summary-linked-rectangle" src="assets/figma-summary/linked-rectangle.svg" alt="">
+
+            <div class="summary-final-pose" aria-hidden="true">
+              <div class="summary-ahxin-foot-slot summary-ahxin-foot-right-slot">
+                <img class="summary-ahxin-foot" src="assets/figma-summary/ahxin-foot.png" alt="">
+              </div>
+              <div class="summary-ahxin-foot-slot summary-ahxin-foot-left-slot">
+                <img class="summary-ahxin-foot" src="assets/figma-summary/ahxin-foot.png" alt="">
+              </div>
+              <img class="summary-ahxin-body" src="assets/figma-summary/ahxin-body.svg" alt="">
+              <div class="summary-ahxin-hearts-slot">
+                <img class="summary-ahxin-hearts" src="assets/figma-summary/ahxin-hearts.svg" alt="">
+              </div>
+              <img class="summary-person" src="assets/figma-summary/person.svg" alt="">
+            </div>
+
+            <img class="summary-cinema-layer summary-seats" src="assets/figma-summary/seats.svg" alt="">
+            <img class="summary-cinema-layer summary-mask" src="assets/figma-summary/mask.svg" alt="">
+
+            <div class="summary-content">
+              <p class="summary-line summary-line-1">这一场，我们一起看完了</p>
+              <p class="summary-line summary-line-2">你记住的 <span class="summary-accent summary-vote-count">5</span> 幕</p>
+              <p class="summary-line summary-line-3">已经写进你的<span class="summary-accent">片尾</span></p>
+              <p class="summary-line summary-line-4">谢谢你陪阿心看到最后</p>
+
+              <button class="summary-cta" type="button" aria-label="查看我的片尾">
+                <span class="summary-cta-label">查看我的片尾</span>
+                <span class="summary-cta-tail" aria-hidden="true"></span>
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <section class="farewell-scene" aria-label="告别页" aria-hidden="true">
+          <div class="farewell-cast" aria-hidden="true">
+            <img class="farewell-shadow" src="assets/figma-farewell/shadow.svg" alt="">
+            <img class="farewell-ahxin-body" src="assets/figma-farewell/ahxin-body.png" alt="">
+            <img class="farewell-ahxin-hearts" src="assets/figma-farewell/hearts.svg" alt="">
+            <img class="farewell-ahxin-leg farewell-ahxin-leg-right" src="assets/figma-farewell/leg-right.svg" alt="">
+            <img class="farewell-ahxin-leg farewell-ahxin-leg-left" src="assets/figma-farewell/leg-right.svg" alt="">
+            <img class="farewell-person" src="assets/figma-farewell/person.svg" alt="">
+          </div>
+
+          <div class="farewell-chat farewell-chat-1">
+            <div class="farewell-chat-inner">
+              <img class="chat-tail" src="assets/figma-farewell/chat-tail.svg" alt="">
+              <div class="chat-card">这一场我们一起看完了</div>
+            </div>
+          </div>
+
+          <div class="farewell-chat farewell-chat-2">
+            <div class="farewell-chat-inner">
+              <img class="chat-tail" src="assets/figma-farewell/chat-tail.svg" alt="">
+              <div class="chat-card">下一场还坐一起 ^_^</div>
+            </div>
+          </div>
+
+          <div class="finale-content">
+            <p class="finale-title">阿心送你一张合影：</p>
+            <img class="finale-card" src="assets/figma-finale/card.png" alt="阿心送你的观影合影">
+            <div class="finale-actions">
+              <p class="finale-save">
+                <img src="assets/figma-finale/save-arrow.svg" alt="">
+                <span>长按留影，保存为图片</span>
+              </p>
+              <p class="finale-egg">查看彩蛋</p>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const inviteScreen = document.querySelector(".invite-screen");
+    let sequenceTimer;
+    let exitTimer;
+    let carouselReadyTimer;
+    const openingLineBase = [2.3, 3.4, 4.5, 5.6];
+    const charStep = .06;
+
+    function splitCardIntoChars(card, baseDelay) {
+      const nodes = [...card.childNodes];
+      let index = 0;
+      card.innerHTML = "";
+
+      nodes.forEach(node => {
+        const text = node.textContent || "";
+        const extraClass = node.nodeType === Node.ELEMENT_NODE ? node.className : "";
+        const extraStyle = node.nodeType === Node.ELEMENT_NODE ? node.style.cssText : "";
+
+        [...text].forEach(character => {
+          const span = document.createElement("span");
+          span.className = `char${extraClass ? ` ${extraClass}` : ""}`;
+          span.style.cssText = extraStyle;
+          span.style.transitionDelay = `${baseDelay + index * charStep}s`;
+          span.textContent = character;
+          card.appendChild(span);
+          index += 1;
+        });
+      });
+    }
+
+    document.querySelectorAll(".opening-chat-stack .chat-card").forEach((card, index) => {
+      splitCardIntoChars(card, openingLineBase[index]);
+    });
+    splitCardIntoChars(document.querySelector(".entry-chat .chat-card"), .3);
+    document.querySelectorAll(".post-entry-chat .chat-card").forEach((card, index) => {
+      splitCardIntoChars(card, [1.6, 2.7][index]);
+    });
+    document.querySelectorAll(".farewell-chat .chat-card").forEach((card, index) => {
+      splitCardIntoChars(card, [1.6, 2.7][index]);
+    });
+
+    const exhibitionSlides = [
+      {
+        title: "孙燕姿的清爽夏日，我也尽兴",
+        count: "344,657",
+        brand: "HUAWEI",
+        cardLabel: "孙燕姿分享清爽粉芭乐饮品的朋友圈广告",
+        accent: "#14cc67",
+        heart: "assets/figma-exhibition/vote-heart.svg",
+        source: "assets/figma-exhibition/backdrop-source.png",
+        cardSource: "assets/figma-exhibition/ad-card.png",
+        cardCrop: { top: 0, left: 0, width: 100, height: 100 },
+        backdropCrop: { top: -23.65, left: -22.37, width: 127.4, height: 186.32 },
+        precomposedCard: true,
+        characterTheme: "green"
+      },
+      {
+        title: "吴磊递来薯片，也分我一份快乐",
+        count: "344,657",
+        brand: "乐事",
+        cardLabel: "吴磊分享乐事薯片的朋友圈广告",
+        accent: "#14cc67",
+        heart: "assets/figma-exhibition/vote-heart.svg",
+        source: "assets/figma-exhibition/slide-2-source.png",
+        cardCrop: { top: 2.97, left: 10.85, width: 78.1, height: 92.15 },
+        backdropCrop: { top: -30.67, left: -30.94, width: 154.82, height: 215.75 },
+        characterTheme: "green"
+      },
+      {
+        title: "和范丞丞猜拳，日子有乐事",
+        count: "344,657",
+        brand: "乐事",
+        cardLabel: "范丞丞邀请猜拳互动的乐事朋友圈广告",
+        accent: "#14cc67",
+        heart: "assets/figma-exhibition/vote-heart.svg",
+        source: "assets/figma-exhibition/slide-03-source.png",
+        cardCrop: { top: 3.74, left: 15.33, width: 69.13, height: 90.52 },
+        backdropCrop: { top: -37.39, left: -60.64, width: 177.69, height: 274.8 },
+        characterTheme: "green"
+      },
+      {
+        title: "和ROSE一起，无畏做自己",
+        count: "344,657",
+        brand: "HUAWEI",
+        cardLabel: "ROSE演绎无畏绽放的朋友圈广告",
+        accent: "#9382ff",
+        heart: "assets/figma-exhibition/heart-purple.svg",
+        source: "assets/figma-exhibition/slide-04-source.png",
+        cardCrop: { top: 3.14, left: 15.85, width: 68.31, height: 89.96 },
+        backdropCrop: { top: -38.95, left: -12.06, width: 178.65, height: 277.91 },
+        characterTheme: "purple"
+      },
+      {
+        title: "于适传来爱，我也想继续传递",
+        count: "344,657",
+        brand: "DAZZLE",
+        cardLabel: "于适与DAZZLE传递爱的朋友圈广告",
+        accent: "#9382ff",
+        heart: "assets/figma-exhibition/heart-purple.svg",
+        source: "assets/figma-exhibition/slide-05-source.png",
+        cardCrop: { top: 3.58, left: 7.13, width: 85.74, height: 88.42 },
+        backdropCrop: { top: -19.95, left: -18.75, width: 137.5, height: 167.49 },
+        characterTheme: "purple"
+      },
+      {
+        title: "王俊凯周也付航打瓦，也叫上我",
+        count: "344,657",
+        brand: "无畏契约",
+        cardLabel: "王俊凯周也付航组队打瓦的朋友圈广告",
+        accent: "#9382ff",
+        heart: "assets/figma-exhibition/heart-purple.svg",
+        source: "assets/figma-exhibition/slide-06-source.png",
+        cardCrop: { top: 2.94, left: 12.54, width: 74.92, height: 92.18 },
+        backdropCrop: { top: -32.51, left: -48.9, width: 180.11, height: 261.75 },
+        characterTheme: "purple"
+      },
+      {
+        title: "肖战与宝诗龙，照见我的闪耀",
+        count: "344,657",
+        brand: "宝诗龙",
+        cardLabel: "肖战诠释宝诗龙珠宝魅力的朋友圈广告",
+        accent: "#ff6385",
+        heart: "assets/figma-exhibition/heart-pink.svg",
+        source: "assets/figma-exhibition/slide-07-source.png",
+        cardCrop: { top: 2.2, left: 10.56, width: 78.88, height: 97.8 },
+        backdropCrop: { top: -28.76, left: -8.86, width: 164.68, height: 241.17 },
+        characterTheme: "pink"
+      },
+      {
+        title: "宝格丽的璀璨，反正都让我心动",
+        count: "344,657",
+        brand: "宝格丽",
+        cardLabel: "宝格丽璀璨珠宝的朋友圈广告",
+        accent: "#ff6385",
+        heart: "assets/figma-exhibition/heart-pink.svg",
+        source: "assets/figma-exhibition/slide-08-source.png",
+        cardCrop: { top: 2.63, left: 4.53, width: 90.94, height: 97.37 },
+        backdropCrop: { top: -62.48, left: -59.52, width: 250.74, height: 317.14 },
+        characterTheme: "pink"
+      },
+      {
+        title: "王嘉尔的特调，让我想尝新可能",
+        count: "344,657",
+        brand: "轩尼诗",
+        cardLabel: "王嘉尔分享轩尼诗特调的朋友圈广告",
+        accent: "#ff6385",
+        heart: "assets/figma-exhibition/heart-pink.svg",
+        source: "assets/figma-exhibition/slide-09-source.png",
+        cardCrop: { top: 3.45, left: 12.29, width: 75.43, height: 97.13 },
+        backdropCrop: { top: -55.08, left: -41.98, width: 259.29, height: 394.38 },
+        characterTheme: "pink"
+      },
+      {
+        title: "CELINE陪我优雅迎新",
+        count: "344,657",
+        brand: "CELINE",
+        cardLabel: "CELINE优雅迎接新年的朋友圈广告",
+        accent: "#ffa734",
+        heart: "assets/figma-exhibition/heart-orange.svg",
+        source: "assets/figma-exhibition/slide-10-source.png",
+        cardCrop: { top: 3.16, left: 18.86, width: 62.28, height: 96.84 },
+        backdropCrop: { top: -21.85, left: -14.07, width: 121.73, height: 223.58 },
+        characterTheme: "orange"
+      },
+      {
+        title: "vivo定格生动，我也珍惜每秒",
+        count: "344,657",
+        brand: "vivo",
+        cardLabel: "vivo定格田曦薇生动瞬间的朋友圈广告",
+        accent: "#ffa734",
+        heart: "assets/figma-exhibition/heart-orange.svg",
+        source: "assets/figma-exhibition/slide-11-source.png",
+        cardCrop: { top: 5.78, left: 4.8, width: 90.4, height: 91.35 },
+        backdropCrop: { top: -28.79, left: -71.08, width: 198.48, height: 236.91 },
+        characterTheme: "orange"
+      },
+      {
+        title: "灵蛇献瑞，点亮我的期待",
+        count: "344,657",
+        brand: "宝格丽",
+        cardLabel: "宝格丽新年灵蛇献瑞的朋友圈广告",
+        accent: "#ffa734",
+        heart: "assets/figma-exhibition/heart-orange.svg",
+        source: "assets/figma-exhibition/slide-12-source.png",
+        cardCrop: { top: 5.18, left: 19.74, width: 60.49, height: 92.23 },
+        backdropCrop: { top: -20.62, left: -33.88, width: 133.89, height: 241.12 },
+        characterTheme: "orange"
+      },
+      {
+        title: "方程豹装下行李，也装下我的远方",
+        count: "344,657",
+        brand: "方程豹",
+        cardLabel: "方程豹展示装载空间的朋友圈广告",
+        accent: "#3fccff",
+        heart: "assets/figma-exhibition/heart-blue.svg",
+        source: "assets/figma-exhibition/slide-13-source.png",
+        cardSource: "assets/figma-exhibition/slide-13-source.png?v=2",
+        cardCrop: { top: 5.16, left: 11.97, width: 76.06, height: 92.25 },
+        backdropCrop: { top: -40.09, left: -25.14, width: 160.67, height: 231.05 },
+        characterTheme: "blue"
+      },
+      {
+        title: "遇见“钦”爱好车，一拍即合",
+        count: "344,657",
+        brand: "奔驰",
+        cardLabel: "奔驰全新纯电CLA的朋友圈广告",
+        accent: "#3fccff",
+        heart: "assets/figma-exhibition/heart-blue.svg",
+        source: "assets/figma-exhibition/slide-14-source.png",
+        cardCrop: { top: 6.03, left: 2.21, width: 95.58, height: 88.79 },
+        backdropCrop: { top: -21.91, left: -19.83, width: 143.09, height: 157.03 },
+        characterTheme: "blue"
+      },
+      {
+        title: "一眼觉得好开，我便期待下一程",
+        count: "344,657",
+        brand: "岚图",
+        cardLabel: "岚图汽车超好开的朋友圈广告",
+        accent: "#3fccff",
+        heart: "assets/figma-exhibition/heart-blue.svg",
+        source: "assets/figma-exhibition/slide-15-source.png",
+        cardCrop: { top: 3.62, left: 11.68, width: 76.65, height: 94.08 },
+        backdropCrop: { top: -28.13, left: -22.51, width: 145.01, height: 210.24 },
+        characterTheme: "blue"
+      }
+    ];
+
+    const splitScene = document.querySelector(".split-scene");
+    const exhibitionBackdrops = document.querySelector(".exhibition-backdrops");
+    const exhibitionCarousel = document.querySelector(".exhibition-carousel");
+    const exhibitionUi = document.querySelector(".exhibition-ui");
+    const exhibitionTitle = document.querySelector(".exhibition-title");
+    const exhibitionMemoryCount = document.querySelector(".exhibition-memory-count");
+    const exhibitionMemoryNumber = document.querySelector(".exhibition-memory-number");
+    const exhibitionVote = document.querySelector(".exhibition-vote");
+    const exhibitionVoteHeart = document.querySelector(".exhibition-vote-heart");
+    const exhibitionVoteTitle = document.querySelector(".exhibition-vote-title");
+    const exhibitionVoteBrand = document.querySelector(".exhibition-vote-brand");
+    const exhibitionProgress = document.querySelector(".exhibition-progress");
+    const exhibitionProgressCurrent = document.querySelector(".exhibition-progress-current");
+    const exhibitionComplete = document.querySelector(".exhibition-complete");
+    const exhibitionCompleteArrow = document.querySelector(".exhibition-complete-arrow");
+    const exhibitionAnnouncer = document.querySelector(".exhibition-announcer");
+    const exhibitionFixedMask = document.querySelector(".exhibition-fixed-mask");
+    const splitFinalPose = document.querySelector(".split-final-pose");
+    const splitZuoyi = document.querySelector(".split-zuoyi");
+    const summaryScene = document.querySelector(".summary-scene");
+    const summaryFinalPose = document.querySelector(".summary-final-pose");
+    const summaryCinemaLayers = [...document.querySelectorAll(".summary-cinema-layer")];
+    const summaryVoteCount = document.querySelector(".summary-vote-count");
+    const summaryCta = document.querySelector(".summary-cta");
+    const creditsTrack = document.querySelector(".credits-track");
+    const farewellScene = document.querySelector(".farewell-scene");
+    const splitAhxinBody = document.querySelector(".split-ahxin-body");
+    const splitAhxinHearts = document.querySelector(".split-ahxin-hearts");
+    const splitAhxinFeet = [...document.querySelectorAll(".split-ahxin-foot")];
+    const splitPersonPose = document.querySelector(".split-person-pose");
+    const maxRememberedSlides = 5;
+    const rememberedSlides = new Set();
+    const characterThemes = {
+      green: {
+        body: "assets/figma-split/ahxin-body.svg",
+        hearts: "assets/figma-split/ahxin-hearts.svg",
+        foot: "assets/figma-split/ahxin-foot.png",
+        person: "assets/figma-split/person-pose.svg"
+      },
+      purple: {
+        body: "assets/figma-exhibition/characters/purple-body.svg",
+        hearts: "assets/figma-exhibition/characters/purple-hearts.svg",
+        foot: "assets/figma-exhibition/characters/purple-foot.png",
+        person: "assets/figma-exhibition/characters/purple-person.svg"
+      },
+      pink: {
+        body: "assets/figma-exhibition/characters/pink-body.svg",
+        hearts: "assets/figma-exhibition/characters/pink-hearts.svg",
+        foot: "assets/figma-exhibition/characters/pink-foot.png",
+        person: "assets/figma-exhibition/characters/pink-person.svg"
+      },
+      orange: {
+        body: "assets/figma-exhibition/characters/orange-body.svg",
+        hearts: "assets/figma-exhibition/characters/orange-hearts.svg",
+        foot: "assets/figma-exhibition/characters/orange-foot.png",
+        person: "assets/figma-exhibition/characters/orange-person.svg"
+      },
+      blue: {
+        body: "assets/figma-exhibition/characters/blue-body.svg",
+        hearts: "assets/figma-exhibition/characters/blue-hearts.svg",
+        foot: "assets/figma-exhibition/characters/blue-foot.png",
+        person: "assets/figma-exhibition/characters/blue-person.svg"
+      }
+    };
+
+    Object.values(characterThemes).forEach(theme => {
+      Object.values(theme).forEach(source => {
+        const image = new Image();
+        image.src = source;
+      });
+    });
+
+    exhibitionBackdrops.innerHTML = exhibitionSlides.map((slide, index) => {
+      const crop = slide.backdropCrop;
+      return `
+        <div class="exhibition-backdrop-layer" data-slide-index="${index}">
+          <img
+            src="${slide.source}"
+            alt=""
+            style="top:${crop.top}%;left:${crop.left}%;width:${crop.width}%;height:${crop.height}%"
+          >
+        </div>
+      `;
+    }).join("");
+
+    exhibitionCarousel.innerHTML = exhibitionSlides.map((slide, index) => {
+      const crop = slide.cardCrop;
+      const imageSource = slide.cardSource || slide.source;
+      const maskClass = index === 0 ? "exhibition-card-mask-1" : "exhibition-card-mask-2";
+      return `
+        <div class="exhibition-projection-card" data-slide-index="${index}" role="img" aria-label="${slide.cardLabel}">
+          <div class="exhibition-card-mask ${maskClass}">
+            <img
+              src="${imageSource}"
+              alt=""
+              style="position:absolute;display:block;max-width:none;pointer-events:none;-webkit-user-drag:none;top:${crop.top}%;left:${crop.left}%;width:${crop.width}%;height:${crop.height}%"
+            >
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    const projectionCards = [...document.querySelectorAll(".exhibition-projection-card")];
+    const backdropLayers = [...document.querySelectorAll(".exhibition-backdrop-layer")];
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let currentSlideIndex = 0;
+    let dragProgress = 0;
+    let carouselReady = false;
+    let settling = false;
+    let gesture = null;
+    let renderRequest = 0;
+    let queuedProgress = null;
+    let currentCharacterTheme = "green";
+    let summaryActive = false;
+    let summaryReadyTimer;
+    let summaryTextPrepared = false;
+    let creditsActive = false;
+    let creditsDoneTimer;
+    let farewellActive = false;
+    let farewellReadyTimer;
+    let finaleTimer;
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function modulo(value, divisor) {
+      return ((value % divisor) + divisor) % divisor;
+    }
+
+    function circularRelativePosition(index, progress) {
+      const count = exhibitionSlides.length;
+      const half = count / 2;
+      let position = index - currentSlideIndex - progress;
+
+      if (position > half) {
+        position -= count;
+      } else if (position < -half) {
+        position += count;
+      }
+
+      return position;
+    }
+
+    function curvedClipPath(relativePosition) {
+      const bend = Math.sin(Math.min(1, Math.abs(relativePosition)) * Math.PI / 2);
+      const side = relativePosition < 0 ? -1 : 1;
+      const top = [];
+      const bottom = [];
+      const segments = 8;
+
+      for (let index = 0; index <= segments; index += 1) {
+        const ratio = index / segments;
+        const innerEdge = side > 0 ? 1 - ratio : ratio;
+        const arc = Math.sin(Math.PI * ratio);
+        const inset = bend * (7.2 * innerEdge + 1.8 * arc);
+        top.push(`${(ratio * 100).toFixed(2)}% ${inset.toFixed(2)}%`);
+        bottom.unshift(`${(ratio * 100).toFixed(2)}% ${(100 - inset).toFixed(2)}%`);
+      }
+
+      return `polygon(${[...top, ...bottom].join(", ")})`;
+    }
+
+    function renderCarousel(progress, updateUi = true) {
+      dragProgress = progress;
+
+      projectionCards.forEach((card, index) => {
+        const relativePosition = circularRelativePosition(index, progress);
+        const distance = Math.abs(relativePosition);
+        const visibleAmount = clamp(1 - distance, 0, 1);
+        const translateX = relativePosition * 340;
+        const translateZ = -distance * 115;
+        const rotateY = relativePosition * -32;
+        const scaleX = 1 - Math.min(1, distance) * .07;
+        const opacity = distance < .001 ? 1 : Math.pow(visibleAmount, .72);
+
+        card.style.zIndex = String(100 - Math.round(distance * 10));
+        card.style.opacity = opacity.toFixed(4);
+        card.style.transform = `translate3d(${translateX.toFixed(2)}px, 0, ${translateZ.toFixed(2)}px) rotateY(${rotateY.toFixed(2)}deg) scaleX(${scaleX.toFixed(4)})`;
+        card.style.clipPath = curvedClipPath(relativePosition);
+        card.setAttribute("aria-hidden", distance < .5 ? "false" : "true");
+      });
+
+      backdropLayers.forEach((layer, index) => {
+        const relativePosition = circularRelativePosition(index, progress);
+        layer.style.opacity = clamp(1 - Math.abs(relativePosition), 0, 1).toFixed(4);
+      });
+
+      if (updateUi) {
+        const fade = 1 - clamp(Math.abs(progress) / .3, 0, 1);
+        exhibitionUi.style.opacity = fade.toFixed(4);
+        exhibitionUi.style.transform = "translateY(0)";
+      }
+    }
+
+    function scheduleCarouselRender(progress) {
+      queuedProgress = progress;
+      if (renderRequest) {
+        return;
+      }
+
+      renderRequest = requestAnimationFrame(() => {
+        renderRequest = 0;
+        const nextProgress = queuedProgress;
+        queuedProgress = null;
+        renderCarousel(nextProgress);
+      });
+    }
+
+    function flushCarouselRender() {
+      if (queuedProgress === null) {
+        return;
+      }
+
+      cancelAnimationFrame(renderRequest);
+      renderRequest = 0;
+      const nextProgress = queuedProgress;
+      queuedProgress = null;
+      renderCarousel(nextProgress);
+    }
+
+    function updateCharacterTheme(themeName) {
+      if (themeName === currentCharacterTheme) {
+        return;
+      }
+
+      const theme = characterThemes[themeName];
+      currentCharacterTheme = themeName;
+      splitAhxinBody.src = theme.body;
+      splitAhxinHearts.src = theme.hearts;
+      splitAhxinFeet.forEach(foot => {
+        foot.src = theme.foot;
+      });
+      splitPersonPose.src = theme.person;
+    }
+
+    function updateVotingUi() {
+      const rememberedCount = rememberedSlides.size;
+      const isRemembered = rememberedSlides.has(currentSlideIndex);
+      const reachedLimit = rememberedCount >= maxRememberedSlides;
+      const slide = exhibitionSlides[currentSlideIndex];
+
+      exhibitionVoteTitle.textContent = isRemembered ? "已记住" : "记住这幕";
+      exhibitionVote.disabled = !carouselReady || isRemembered || reachedLimit;
+      exhibitionVote.tabIndex = exhibitionVote.disabled ? -1 : 0;
+      exhibitionVote.setAttribute(
+        "aria-label",
+        isRemembered
+          ? `已记住，${slide.brand}`
+          : reachedLimit
+            ? `最多可记住 ${maxRememberedSlides} 幕`
+            : `记住这幕，${slide.brand}`
+      );
+
+      exhibitionProgressCurrent.textContent = String(rememberedCount);
+      exhibitionProgressCurrent.classList.toggle("is-active", rememberedCount > 0);
+      exhibitionProgress.classList.toggle("is-complete", reachedLimit);
+      exhibitionComplete.disabled = !reachedLimit || summaryActive;
+      exhibitionComplete.tabIndex = exhibitionComplete.disabled ? -1 : 0;
+      exhibitionCompleteArrow.src = reachedLimit
+        ? "assets/figma-exhibition/arrow-down-active.svg"
+        : "assets/figma-exhibition/arrow-down.svg";
+    }
+
+    function prepareSummaryText() {
+      if (summaryTextPrepared) {
+        return;
+      }
+
+      summaryVoteCount.textContent = String(rememberedSlides.size);
+      const summaryDelays = [0, .75, 1.5, 2.25];
+      document.querySelectorAll(".summary-line").forEach((line, index) => {
+        splitCardIntoChars(line, summaryDelays[index]);
+      });
+      summaryTextPrepared = true;
+    }
+
+    function animateOpacity(element, from, to, duration = 1200) {
+      element.getAnimations().forEach(animation => animation.cancel());
+      const animation = element.animate(
+        [{ opacity: from }, { opacity: to }],
+        {
+          duration: reduceMotion.matches ? 1 : duration,
+          easing: "ease",
+          fill: "forwards"
+        }
+      );
+
+      return animation.finished.catch(() => {}).then(() => {
+        element.style.opacity = String(to);
+        animation.cancel();
+      });
+    }
+
+    function startFinale() {
+      inviteScreen.classList.add("finale-ready");
+      exhibitionAnnouncer.textContent = "阿心送你一张合影";
+    }
+
+    function startFarewell() {
+      if (farewellActive) {
+        return;
+      }
+
+      farewellActive = true;
+      inviteScreen.classList.add("farewell-transitioning");
+      farewellScene.setAttribute("aria-hidden", "false");
+      exhibitionAnnouncer.textContent = "告别页开始";
+
+      window.clearTimeout(farewellReadyTimer);
+      farewellReadyTimer = window.setTimeout(() => {
+        inviteScreen.classList.add("farewell-ready");
+        const lastChar = [...document.querySelectorAll(".farewell-chat-2 .char")].at(-1);
+        const lastDelay = lastChar ? Number.parseFloat(lastChar.style.transitionDelay) || 2.7 : 2.7;
+        window.clearTimeout(finaleTimer);
+        finaleTimer = window.setTimeout(startFinale, reduceMotion.matches ? 1 : (lastDelay + 1.5) * 1000);
+      }, reduceMotion.matches ? 1 : 1000);
+    }
+
+    function finishCredits() {
+      if (!creditsActive || summaryScene.classList.contains("credits-done")) {
+        return;
+      }
+
+      summaryScene.classList.add("credits-done");
+      exhibitionAnnouncer.textContent = "片尾曲播放完毕";
+      startFarewell();
+    }
+
+    function startCredits() {
+      if (creditsActive || !summaryActive) {
+        return;
+      }
+
+      creditsActive = true;
+      inviteScreen.classList.add("credits-playing");
+      summaryScene.classList.add("credits-playing");
+      exhibitionAnnouncer.textContent = "片尾曲开始播放";
+
+      if (reduceMotion.matches) {
+        summaryScene.classList.add("credits-static");
+        window.clearTimeout(creditsDoneTimer);
+        creditsDoneTimer = window.setTimeout(finishCredits, 1800);
+      }
+    }
+
+    function startSummary() {
+      if (summaryActive || rememberedSlides.size < maxRememberedSlides) {
+        return;
+      }
+
+      summaryActive = true;
+      carouselReady = false;
+      gesture = null;
+      splitScene.classList.remove("is-dragging");
+      inviteScreen.classList.add("summary-transitioning");
+      summaryScene.setAttribute("aria-hidden", "false");
+      updateVotingUi();
+      prepareSummaryText();
+
+      const outgoing = [
+        exhibitionBackdrops,
+        exhibitionUi,
+        exhibitionCarousel,
+        exhibitionProgress,
+        splitFinalPose,
+        splitZuoyi,
+        exhibitionFixedMask
+      ];
+      const incoming = [summaryFinalPose, ...summaryCinemaLayers];
+
+      outgoing.forEach(element => {
+        animateOpacity(element, Number.parseFloat(getComputedStyle(element).opacity) || 1, 0);
+      });
+      incoming.forEach(element => {
+        animateOpacity(element, 0, 1);
+      });
+
+      window.clearTimeout(summaryReadyTimer);
+      summaryReadyTimer = window.setTimeout(() => {
+        inviteScreen.classList.remove("summary-transitioning");
+        inviteScreen.classList.add("summary-ready");
+        exhibitionAnnouncer.textContent = `投票完成，你记住了 ${rememberedSlides.size} 幕`;
+      }, reduceMotion.matches ? 1 : 1200);
+    }
+
+    function updateExhibitionContent(index, announce = false) {
+      const slide = exhibitionSlides[index];
+      exhibitionTitle.textContent = slide.title;
+      exhibitionMemoryNumber.textContent = slide.count;
+      exhibitionMemoryCount.style.color = slide.accent;
+      exhibitionVoteHeart.src = slide.heart;
+      exhibitionVoteBrand.textContent = slide.brand;
+      exhibitionCarousel.setAttribute("aria-label", `广告放映区，第 ${index + 1} 幕，共 ${exhibitionSlides.length} 幕`);
+      updateCharacterTheme(slide.characterTheme);
+      updateVotingUi();
+
+      projectionCards.forEach((card, cardIndex) => {
+        card.setAttribute("aria-label", exhibitionSlides[cardIndex].cardLabel);
+      });
+
+      if (announce) {
+        exhibitionAnnouncer.textContent = `已进入第 ${index + 1} 幕：${slide.title}`;
+      }
+    }
+
+    function revealExhibitionUi() {
+      exhibitionUi.getAnimations().forEach(animation => animation.cancel());
+      exhibitionUi.style.opacity = "0";
+      exhibitionUi.style.transform = "translateY(5px)";
+
+      if (reduceMotion.matches) {
+        exhibitionUi.style.opacity = "1";
+        exhibitionUi.style.transform = "translateY(0)";
+        return Promise.resolve();
+      }
+
+      const animation = exhibitionUi.animate(
+        [
+          { opacity: 0, transform: "translateY(5px)" },
+          { opacity: 1, transform: "translateY(0)" }
+        ],
+        {
+          duration: 550,
+          easing: "cubic-bezier(.29, .02, .28, .96)",
+          fill: "forwards"
+        }
+      );
+
+      return animation.finished.catch(() => {}).then(() => {
+        exhibitionUi.style.opacity = "1";
+        exhibitionUi.style.transform = "translateY(0)";
+        animation.cancel();
+      });
+    }
+
+    function settleCarousel(targetProgress, shouldChangeSlide) {
+      if (settling) {
+        return;
+      }
+
+      flushCarouselRender();
+      settling = true;
+      splitScene.classList.remove("is-dragging");
+      const initialProgress = dragProgress;
+      const duration = reduceMotion.matches ? 1 : shouldChangeSlide ? 360 : 220;
+      const startTime = performance.now();
+
+      function frame(now) {
+        const elapsed = clamp((now - startTime) / duration, 0, 1);
+        const eased = 1 - Math.pow(1 - elapsed, 3);
+        const nextProgress = initialProgress + (targetProgress - initialProgress) * eased;
+        renderCarousel(nextProgress);
+
+        if (elapsed < 1) {
+          requestAnimationFrame(frame);
+          return;
+        }
+
+        if (!shouldChangeSlide) {
+          dragProgress = 0;
+          renderCarousel(0);
+          settling = false;
+          return;
+        }
+
+        currentSlideIndex = modulo(currentSlideIndex + targetProgress, exhibitionSlides.length);
+        dragProgress = 0;
+        updateExhibitionContent(currentSlideIndex, true);
+        renderCarousel(0, false);
+        revealExhibitionUi().finally(() => {
+          settling = false;
+        });
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+    function finishGesture(cancelled = false) {
+      if (!gesture) {
+        return;
+      }
+
+      flushCarouselRender();
+      const samples = gesture.samples;
+      const latest = samples[samples.length - 1];
+      const earliest = [...samples].reverse().find(sample => latest.time - sample.time >= 60) || samples[0];
+      const elapsed = Math.max(1, latest.time - earliest.time);
+      const velocityX = (latest.x - earliest.x) / elapsed;
+      const progressDirection = Math.abs(dragProgress) > .02
+        ? Math.sign(dragProgress)
+        : velocityX < 0 ? 1 : -1;
+      const fastEnough = progressDirection > 0 ? velocityX < -.45 : velocityX > .45;
+      const farEnough = Math.abs(dragProgress) >= .22;
+      const shouldChangeSlide = !cancelled && gesture.horizontal && (farEnough || fastEnough);
+
+      gesture = null;
+      settleCarousel(shouldChangeSlide ? progressDirection : 0, shouldChangeSlide);
+    }
+
+    function handlePointerDown(event) {
+      if (!carouselReady || settling || gesture || (event.pointerType === "mouse" && event.button !== 0)) {
+        return;
+      }
+
+      gesture = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        horizontal: false,
+        samples: [{ x: event.clientX, time: performance.now() }]
+      };
+    }
+
+    function handlePointerMove(event) {
+      if (!gesture || event.pointerId !== gesture.pointerId) {
+        return;
+      }
+
+      const deltaX = event.clientX - gesture.startX;
+      const deltaY = event.clientY - gesture.startY;
+
+      if (!gesture.horizontal) {
+        if (Math.abs(deltaX) < 6 && Math.abs(deltaY) < 6) {
+          return;
+        }
+
+        if (Math.abs(deltaY) > Math.abs(deltaX)) {
+          gesture = null;
+          return;
+        }
+
+        gesture.horizontal = true;
+        splitScene.classList.add("is-dragging");
+        splitScene.setPointerCapture?.(event.pointerId);
+      }
+
+      event.preventDefault();
+      const now = performance.now();
+      gesture.samples.push({ x: event.clientX, time: now });
+      gesture.samples = gesture.samples.filter(sample => now - sample.time <= 120);
+
+      let nextProgress = -deltaX / 390;
+
+      scheduleCarouselRender(clamp(nextProgress, -1, 1));
+    }
+
+    function handlePointerUp(event) {
+      if (!gesture || event.pointerId !== gesture.pointerId) {
+        return;
+      }
+
+      if (!gesture.horizontal) {
+        gesture = null;
+        return;
+      }
+
+      gesture.samples.push({ x: event.clientX, time: performance.now() });
+      finishGesture(false);
+    }
+
+    function handlePointerCancel(event) {
+      if (!gesture || event.pointerId !== gesture.pointerId) {
+        return;
+      }
+      finishGesture(true);
+    }
+
+    function enableCarousel() {
+      if (carouselReady) {
+        return;
+      }
+
+      window.clearTimeout(carouselReadyTimer);
+      carouselReady = true;
+      inviteScreen.classList.add("carousel-ready");
+      updateExhibitionContent(currentSlideIndex);
+      renderCarousel(0);
+    }
+
+    function resetCarousel() {
+      window.clearTimeout(carouselReadyTimer);
+      carouselReady = false;
+      settling = false;
+      gesture = null;
+      currentSlideIndex = 0;
+      dragProgress = 0;
+      queuedProgress = null;
+      rememberedSlides.clear();
+      summaryActive = false;
+      summaryTextPrepared = false;
+      creditsActive = false;
+      farewellActive = false;
+      window.clearTimeout(summaryReadyTimer);
+      window.clearTimeout(creditsDoneTimer);
+      window.clearTimeout(farewellReadyTimer);
+      window.clearTimeout(finaleTimer);
+      cancelAnimationFrame(renderRequest);
+      renderRequest = 0;
+      inviteScreen.classList.remove("carousel-ready", "summary-transitioning", "summary-ready", "credits-playing", "farewell-transitioning", "farewell-ready", "finale-ready");
+      summaryScene.classList.remove("credits-playing", "credits-done", "credits-static");
+      splitScene.classList.remove("is-dragging");
+      summaryScene.setAttribute("aria-hidden", "true");
+      farewellScene.setAttribute("aria-hidden", "true");
+      exhibitionUi.getAnimations().forEach(animation => animation.cancel());
+      exhibitionUi.style.removeProperty("opacity");
+      exhibitionUi.style.removeProperty("transform");
+      updateExhibitionContent(0);
+      renderCarousel(0, false);
+    }
+
+    exhibitionUi.addEventListener("animationend", event => {
+      if (event.target === exhibitionUi && event.animationName === "exhibition-content-in") {
+        enableCarousel();
+      }
+    });
+
+    splitScene.addEventListener("pointerdown", handlePointerDown);
+    splitScene.addEventListener("pointermove", handlePointerMove);
+    splitScene.addEventListener("pointerup", handlePointerUp);
+    splitScene.addEventListener("pointercancel", handlePointerCancel);
+    exhibitionVote.addEventListener("pointerdown", event => {
+      event.stopPropagation();
+    });
+    exhibitionVote.addEventListener("click", event => {
+      event.stopPropagation();
+
+      if (!carouselReady || settling || rememberedSlides.has(currentSlideIndex) || rememberedSlides.size >= maxRememberedSlides) {
+        return;
+      }
+
+      rememberedSlides.add(currentSlideIndex);
+      exhibitionVote.classList.remove("is-popping");
+      void exhibitionVote.offsetWidth;
+      exhibitionVote.classList.add("is-popping");
+      updateVotingUi();
+      exhibitionAnnouncer.textContent = `已记住第 ${currentSlideIndex + 1} 幕，目前共记住 ${rememberedSlides.size} 幕`;
+    });
+    exhibitionVote.addEventListener("animationend", event => {
+      if (event.animationName === "vote-heart-pop") {
+        exhibitionVote.classList.remove("is-popping");
+      }
+    });
+    exhibitionComplete.addEventListener("click", event => {
+      event.stopPropagation();
+      startSummary();
+    });
+    summaryCta.addEventListener("click", event => {
+      event.stopPropagation();
+      startCredits();
+      window.dispatchEvent(new CustomEvent("summary:view-ending", {
+        detail: { rememberedSlides: [...rememberedSlides] }
+      }));
+    });
+    creditsTrack.addEventListener("animationend", event => {
+      if (event.animationName === "credits-roll") {
+        finishCredits();
+      }
+    });
+    exhibitionCarousel.addEventListener("keydown", event => {
+      if (!carouselReady || settling) {
+        return;
+      }
+
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        settleCarousel(1, true);
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        settleCarousel(-1, true);
+      }
+    });
+
+    resetCarousel();
+
+    function startSequence() {
+      window.clearTimeout(sequenceTimer);
+      window.clearTimeout(exitTimer);
+      resetCarousel();
+      inviteScreen.classList.remove("sequence-active", "show-entry", "entering", "exiting");
+      inviteScreen.classList.add("sequence-reset");
+      void inviteScreen.offsetWidth;
+      inviteScreen.classList.remove("sequence-reset");
+      void inviteScreen.offsetWidth;
+      inviteScreen.classList.add("sequence-active");
+      sequenceTimer = window.setTimeout(() => {
+        inviteScreen.classList.add("show-entry");
+      }, 7520);
+    }
+
+    const entryHint = document.querySelector(".entry-hint");
+
+    function enterScreen() {
+      if (!inviteScreen.classList.contains("show-entry") || inviteScreen.classList.contains("entering")) {
+        return;
+      }
+
+      inviteScreen.classList.add("entering");
+      entryHint.setAttribute("aria-disabled", "true");
+      entryHint.setAttribute("tabindex", "-1");
+      exitTimer = window.setTimeout(() => {
+        inviteScreen.classList.add("exiting");
+        carouselReadyTimer = window.setTimeout(enableCarousel, 9900);
+      }, 4500);
+    }
+
+    entryHint.addEventListener("click", enterScreen);
+    entryHint.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        enterScreen();
+      }
+    });
+
+    function fitStageToViewport() {
+      const safeMargin = 24;
+      const widthScale = (window.innerWidth - safeMargin * 2) / 390;
+      const heightScale = (window.innerHeight - safeMargin * 2) / 844;
+      const scale = Math.max(.2, Math.min(1, widthScale, heightScale));
+      document.documentElement.style.setProperty("--stage-scale", scale.toFixed(4));
+    }
+
+    fitStageToViewport();
+    window.addEventListener("resize", fitStageToViewport);
+    window.visualViewport?.addEventListener("resize", fitStageToViewport);
+    startSequence();
+  </script>
+</body>
+</html>

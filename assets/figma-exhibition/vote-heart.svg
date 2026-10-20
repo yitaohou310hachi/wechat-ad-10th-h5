@@ -1,0 +1,27 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="118.459" height="108.546" viewBox="0 0 118.459 108.546" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="&#232;&#183;&#175;&#229;&#190;&#132;" filter="url(#filter0_n_0_96)">
+<path d="M108.292 10.1862C94.7546 -3.3738 72.7948 -3.3923 59.239 10.1677C45.6828 -3.3923 23.723 -3.39231 10.1672 10.1862C-3.38906 23.7646 -3.38906 45.7785 10.1672 59.3384L59.239 108.546L108.292 59.3384C121.848 45.7785 121.848 23.7646 108.292 10.1862Z" fill-rule="evenodd" clip-rule="evenodd" fill="url(#paint0_radial_0_96)"/>
+</g>
+<defs>
+<filter id="filter0_n_0_96" x="0" y="0" width="118.459" height="108.546" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feTurbulence type="fractalNoise" baseFrequency="1.8114387989044189 2.5360140800476074" stitchTiles="stitch" numOctaves="3" result="noise" seed="3467" />
+<feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise" />
+<feComponentTransfer in="alphaNoise" result="coloredNoise1">
+<feFuncA type="discrete" tableValues="0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "/>
+</feComponentTransfer>
+<feComposite operator="in" in2="shape" in="coloredNoise1" result="noise1Clipped" />
+<feFlood flood-color="rgba(255, 255, 255, 0.25)" result="color1Flood" />
+<feComposite operator="in" in2="noise1Clipped" in="color1Flood" result="color1" />
+<feMerge result="effect1_noise_0_96">
+<feMergeNode in="shape" />
+<feMergeNode in="color1" />
+</feMerge>
+</filter>
+<radialGradient id="paint0_radial_0_96" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(49.8878 60.6917) rotate(90) scale(84.5704 79.8434)">
+<stop stop-color="#73F04F"/>
+<stop offset="1" stop-color="#23B755"/>
+</radialGradient>
+</defs>
+</svg>

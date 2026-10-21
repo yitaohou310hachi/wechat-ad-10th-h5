@@ -1638,11 +1638,12 @@
     .split-zuoyi {
       position: absolute;
       top: 738px;
-      left: 0;
+      left: 195px;
       z-index: 4;
       display: block;
-      width: 390px;
+      width: 455px;
       height: 39px;
+      max-width: none;
       opacity: 0;
       transform: translateX(195px);
       will-change: transform, opacity;
@@ -1650,6 +1651,12 @@
 
     .invite-screen.exiting .split-zuoyi {
       animation: split-zuoyi-in 2.2s cubic-bezier(.17, .02, .78, .98) 4.7s forwards;
+    }
+
+    .invite-screen.carousel-ready .split-zuoyi {
+      animation: none;
+      opacity: 1;
+      transform: translateX(0);
     }
 
     .exhibition-reveal {
@@ -3069,7 +3076,7 @@
             <img class="split-person-pose" src="assets/figma-split/person-pose.svg" alt="">
           </div>
 
-          <img class="split-zuoyi" src="assets/figma-split/zuoyi.png" alt="">
+          <img class="split-zuoyi" src="assets/figma-split/zuoyi.svg" alt="">
 
           <div class="exhibition-backdrops exhibition-reveal" aria-hidden="true"></div>
 

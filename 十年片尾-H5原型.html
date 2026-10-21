@@ -418,6 +418,7 @@
 
     .walk-body-slot,
     .walk-hearts-slot,
+    .walk-bow-slot,
     .walk-leg-slot {
       position: absolute;
       display: flex;
@@ -452,6 +453,60 @@
       width: 56.48px;
       height: 39.24px;
       transform: rotate(170.08deg) scaleY(-1);
+    }
+
+    .walk-bow-slot {
+      z-index: 4;
+      width: 44px;
+      height: 22px;
+    }
+
+    .walk-bow {
+      display: block;
+      width: 44px;
+      height: 22px;
+    }
+
+    .walk-frame-1 .walk-bow-slot {
+      top: 43px;
+      left: 37px;
+    }
+
+    .walk-frame-2 .walk-bow-slot {
+      top: 42.41px;
+      left: 36.71px;
+      width: 44.582px;
+      height: 23.191px;
+    }
+
+    .walk-frame-2 .walk-bow {
+      transform: rotate(-1.56deg);
+    }
+
+    .walk-frame-3 .walk-bow-slot {
+      top: 36px;
+      left: 42px;
+      width: 47.5px;
+      height: 30.324px;
+    }
+
+    .walk-frame-3 .walk-bow {
+      transform: rotate(-11.49deg);
+    }
+
+    .walk-frame-4 .walk-bow-slot {
+      top: 42px;
+      left: 42px;
+    }
+
+    .walk-frame-5 .walk-bow-slot {
+      top: 39px;
+      left: 42px;
+    }
+
+    .walk-frame-6 .walk-bow-slot {
+      top: 43px;
+      left: 40px;
     }
 
     .walk-leg-slot {
@@ -2850,43 +2905,49 @@
           <img class="home-shadow" src="assets/figma-home/ahxin-shadow.svg" width="195" height="26" alt="">
           <div class="home-ahxin" data-node-id="3939:15600" aria-label="走入画面的阿心">
             <div class="walk-frame walk-frame-1">
-              <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
-              <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-b.svg" alt=""></div>
+              <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png?v=walk3" alt=""></div>
+              <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-1.svg" alt=""></div>
+              <div class="walk-bow-slot"><img class="walk-bow" src="assets/figma-walk/bow.svg" alt=""></div>
               <div class="walk-leg-slot frame-1-leg-right"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
               <div class="walk-leg-slot frame-1-leg-left"><img src="assets/figma-walk/frame1-leg-left.svg" alt=""></div>
             </div>
 
             <div class="walk-frame walk-frame-2">
-              <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
-              <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-a.svg" alt=""></div>
+              <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png?v=walk3" alt=""></div>
+              <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-2.svg" alt=""></div>
+              <div class="walk-bow-slot"><img class="walk-bow" src="assets/figma-walk/bow.svg" alt=""></div>
               <div class="walk-leg-slot frame-2-leg-right"><img src="assets/figma-walk/frame2-leg-right.svg" alt=""></div>
               <div class="walk-leg-slot frame-2-leg-left"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
             </div>
 
             <div class="walk-frame walk-frame-3">
-              <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
-              <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-b.svg" alt=""></div>
+              <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png?v=walk3" alt=""></div>
+              <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-3.svg" alt=""></div>
+              <div class="walk-bow-slot"><img class="walk-bow" src="assets/figma-walk/bow.svg" alt=""></div>
               <div class="walk-leg-slot frame-3-leg-right"><img src="assets/figma-walk/frame3-leg-right.svg" alt=""></div>
               <div class="walk-leg-slot frame-3-leg-left"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
             </div>
 
             <div class="walk-frame walk-frame-4">
-              <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
-              <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-c.svg" alt=""></div>
+              <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png?v=walk3" alt=""></div>
+              <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-4.svg" alt=""></div>
+              <div class="walk-bow-slot"><img class="walk-bow" src="assets/figma-walk/bow.svg" alt=""></div>
               <div class="walk-leg-slot frame-4-leg-right"><img src="assets/figma-walk/frame4-leg-right.svg" alt=""></div>
               <div class="walk-leg-slot frame-4-leg-left"><img src="assets/figma-walk/frame4-leg-left.svg" alt=""></div>
             </div>
 
             <div class="walk-frame walk-frame-5">
-              <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
-              <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-d.svg" alt=""></div>
+              <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png?v=walk3" alt=""></div>
+              <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-5.svg" alt=""></div>
+              <div class="walk-bow-slot"><img class="walk-bow" src="assets/figma-walk/bow.svg" alt=""></div>
               <div class="walk-leg-slot frame-5-leg-left"><img src="assets/figma-walk/frame5-leg-left.svg" alt=""></div>
               <div class="walk-leg-slot frame-5-leg-right"><img src="assets/figma-walk/frame5-leg-right.svg" alt=""></div>
             </div>
 
             <div class="walk-frame walk-frame-6">
-              <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
-              <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-c.svg" alt=""></div>
+              <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png?v=walk3" alt=""></div>
+              <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-4.svg" alt=""></div>
+              <div class="walk-bow-slot"><img class="walk-bow" src="assets/figma-walk/bow.svg" alt=""></div>
               <div class="walk-leg-slot frame-6-leg-right"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
               <div class="walk-leg-slot frame-6-leg-left"><img src="assets/figma-walk/frame1-leg-left.svg" alt=""></div>
             </div>
@@ -2978,43 +3039,49 @@
           <div class="exit-ahxin-motion" aria-hidden="true">
             <div class="exit-ahxin-walk">
               <div class="walk-frame walk-frame-1 exit-ip-frame">
-                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
-                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-b.svg" alt=""></div>
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png?v=walk3" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-1.svg" alt=""></div>
+                <div class="walk-bow-slot"><img class="walk-bow" src="assets/figma-walk/bow.svg" alt=""></div>
                 <div class="walk-leg-slot frame-1-leg-right"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
                 <div class="walk-leg-slot frame-1-leg-left"><img src="assets/figma-walk/frame1-leg-left.svg" alt=""></div>
               </div>
 
               <div class="walk-frame walk-frame-2 exit-ip-frame">
-                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
-                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-a.svg" alt=""></div>
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png?v=walk3" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-2.svg" alt=""></div>
+                <div class="walk-bow-slot"><img class="walk-bow" src="assets/figma-walk/bow.svg" alt=""></div>
                 <div class="walk-leg-slot frame-2-leg-right"><img src="assets/figma-walk/frame2-leg-right.svg" alt=""></div>
                 <div class="walk-leg-slot frame-2-leg-left"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
               </div>
 
               <div class="walk-frame walk-frame-3 exit-ip-frame">
-                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
-                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-b.svg" alt=""></div>
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png?v=walk3" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-3.svg" alt=""></div>
+                <div class="walk-bow-slot"><img class="walk-bow" src="assets/figma-walk/bow.svg" alt=""></div>
                 <div class="walk-leg-slot frame-3-leg-right"><img src="assets/figma-walk/frame3-leg-right.svg" alt=""></div>
                 <div class="walk-leg-slot frame-3-leg-left"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
               </div>
 
               <div class="walk-frame walk-frame-4 exit-ip-frame">
-                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
-                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-c.svg" alt=""></div>
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png?v=walk3" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-4.svg" alt=""></div>
+                <div class="walk-bow-slot"><img class="walk-bow" src="assets/figma-walk/bow.svg" alt=""></div>
                 <div class="walk-leg-slot frame-4-leg-right"><img src="assets/figma-walk/frame4-leg-right.svg" alt=""></div>
                 <div class="walk-leg-slot frame-4-leg-left"><img src="assets/figma-walk/frame4-leg-left.svg" alt=""></div>
               </div>
 
               <div class="walk-frame walk-frame-5 exit-ip-frame">
-                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
-                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-d.svg" alt=""></div>
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png?v=walk3" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-5.svg" alt=""></div>
+                <div class="walk-bow-slot"><img class="walk-bow" src="assets/figma-walk/bow.svg" alt=""></div>
                 <div class="walk-leg-slot frame-5-leg-left"><img src="assets/figma-walk/frame5-leg-left.svg" alt=""></div>
                 <div class="walk-leg-slot frame-5-leg-right"><img src="assets/figma-walk/frame5-leg-right.svg" alt=""></div>
               </div>
 
               <div class="walk-frame walk-frame-6 exit-ip-frame">
-                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
-                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-c.svg" alt=""></div>
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png?v=walk3" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-4.svg" alt=""></div>
+                <div class="walk-bow-slot"><img class="walk-bow" src="assets/figma-walk/bow.svg" alt=""></div>
                 <div class="walk-leg-slot frame-6-leg-right"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
                 <div class="walk-leg-slot frame-6-leg-left"><img src="assets/figma-walk/frame1-leg-left.svg" alt=""></div>
               </div>
@@ -3043,43 +3110,49 @@
           <div class="split-ahxin-walk-motion" aria-hidden="true">
             <div class="split-ahxin-walk">
               <div class="walk-frame walk-frame-1 split-ip-frame">
-                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
-                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-b.svg" alt=""></div>
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png?v=walk3" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-1.svg" alt=""></div>
+                <div class="walk-bow-slot"><img class="walk-bow" src="assets/figma-walk/bow.svg" alt=""></div>
                 <div class="walk-leg-slot frame-1-leg-right"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
                 <div class="walk-leg-slot frame-1-leg-left"><img src="assets/figma-walk/frame1-leg-left.svg" alt=""></div>
               </div>
 
               <div class="walk-frame walk-frame-2 split-ip-frame">
-                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
-                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-a.svg" alt=""></div>
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png?v=walk3" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-2.svg" alt=""></div>
+                <div class="walk-bow-slot"><img class="walk-bow" src="assets/figma-walk/bow.svg" alt=""></div>
                 <div class="walk-leg-slot frame-2-leg-right"><img src="assets/figma-walk/frame2-leg-right.svg" alt=""></div>
                 <div class="walk-leg-slot frame-2-leg-left"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
               </div>
 
               <div class="walk-frame walk-frame-3 split-ip-frame">
-                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
-                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-b.svg" alt=""></div>
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png?v=walk3" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-3.svg" alt=""></div>
+                <div class="walk-bow-slot"><img class="walk-bow" src="assets/figma-walk/bow.svg" alt=""></div>
                 <div class="walk-leg-slot frame-3-leg-right"><img src="assets/figma-walk/frame3-leg-right.svg" alt=""></div>
                 <div class="walk-leg-slot frame-3-leg-left"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
               </div>
 
               <div class="walk-frame walk-frame-4 split-ip-frame">
-                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
-                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-c.svg" alt=""></div>
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png?v=walk3" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-4.svg" alt=""></div>
+                <div class="walk-bow-slot"><img class="walk-bow" src="assets/figma-walk/bow.svg" alt=""></div>
                 <div class="walk-leg-slot frame-4-leg-right"><img src="assets/figma-walk/frame4-leg-right.svg" alt=""></div>
                 <div class="walk-leg-slot frame-4-leg-left"><img src="assets/figma-walk/frame4-leg-left.svg" alt=""></div>
               </div>
 
               <div class="walk-frame walk-frame-5 split-ip-frame">
-                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
-                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-d.svg" alt=""></div>
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png?v=walk3" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-5.svg" alt=""></div>
+                <div class="walk-bow-slot"><img class="walk-bow" src="assets/figma-walk/bow.svg" alt=""></div>
                 <div class="walk-leg-slot frame-5-leg-left"><img src="assets/figma-walk/frame5-leg-left.svg" alt=""></div>
                 <div class="walk-leg-slot frame-5-leg-right"><img src="assets/figma-walk/frame5-leg-right.svg" alt=""></div>
               </div>
 
               <div class="walk-frame walk-frame-6 split-ip-frame">
-                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png" alt=""></div>
-                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-c.svg" alt=""></div>
+                <div class="walk-body-slot"><img class="walk-body" src="assets/figma-walk/body.png?v=walk3" alt=""></div>
+                <div class="walk-hearts-slot"><img class="walk-hearts" src="assets/figma-walk/hearts-4.svg" alt=""></div>
+                <div class="walk-bow-slot"><img class="walk-bow" src="assets/figma-walk/bow.svg" alt=""></div>
                 <div class="walk-leg-slot frame-6-leg-right"><img src="assets/figma-walk/leg-straight.svg" alt=""></div>
                 <div class="walk-leg-slot frame-6-leg-left"><img src="assets/figma-walk/frame1-leg-left.svg" alt=""></div>
               </div>

@@ -1957,6 +1957,7 @@
     }
 
     .exhibition-progress {
+      --exhibition-accent: #03e971;
       position: absolute;
       top: 763px;
       left: 0;
@@ -1989,7 +1990,7 @@
 
     .exhibition-progress-current.is-active,
     .exhibition-progress.is-complete .exhibition-progress-quota {
-      color: #53ef72;
+      color: var(--exhibition-accent);
     }
 
     .exhibition-complete {
@@ -2019,18 +2020,25 @@
       text-align: center;
     }
 
-    .exhibition-complete img {
+    .exhibition-complete-arrow {
       position: absolute;
       top: 1px;
       left: 56.335px;
       width: 20px;
       height: 20px;
+      background-color: rgba(255, 255, 255, .21);
+      -webkit-mask: url("assets/figma-exhibition/arrow-down-active.svg") center / 20px 20px no-repeat;
+      mask: url("assets/figma-exhibition/arrow-down-active.svg") center / 20px 20px no-repeat;
     }
 
     .exhibition-progress.is-complete .exhibition-complete {
-      color: #53ef72;
+      color: var(--exhibition-accent);
       cursor: pointer;
       pointer-events: auto;
+    }
+
+    .exhibition-progress.is-complete .exhibition-complete-arrow {
+      background-color: var(--exhibition-accent);
     }
 
     .summary-scene {
@@ -3105,7 +3113,7 @@
             </p>
             <button class="exhibition-complete" type="button" disabled tabindex="-1">
               <span>完成投票</span>
-              <img class="exhibition-complete-arrow" src="assets/figma-exhibition/arrow-down.svg" alt="">
+              <span class="exhibition-complete-arrow" aria-hidden="true"></span>
             </button>
           </div>
 
@@ -3487,7 +3495,6 @@
     const exhibitionProgress = document.querySelector(".exhibition-progress");
     const exhibitionProgressCurrent = document.querySelector(".exhibition-progress-current");
     const exhibitionComplete = document.querySelector(".exhibition-complete");
-    const exhibitionCompleteArrow = document.querySelector(".exhibition-complete-arrow");
     const exhibitionAnnouncer = document.querySelector(".exhibition-announcer");
     const exhibitionFixedMask = document.querySelector(".exhibition-fixed-mask");
     const splitFinalPose = document.querySelector(".split-final-pose");
@@ -3732,9 +3739,6 @@
       exhibitionProgress.classList.toggle("is-complete", reachedLimit);
       exhibitionComplete.disabled = !reachedLimit || summaryActive;
       exhibitionComplete.tabIndex = exhibitionComplete.disabled ? -1 : 0;
-      exhibitionCompleteArrow.src = reachedLimit
-        ? "assets/figma-exhibition/arrow-down-active.svg"
-        : "assets/figma-exhibition/arrow-down.svg";
     }
 
     function prepareSummaryText() {
@@ -3870,6 +3874,7 @@
       exhibitionTitle.textContent = slide.title;
       exhibitionMemoryNumber.textContent = slide.count;
       exhibitionMemoryNumber.style.color = slide.accent;
+      exhibitionProgress.style.setProperty("--exhibition-accent", slide.accent);
       exhibitionVoteHeart.src = slide.heart;
       exhibitionVoteBrand.textContent = slide.brand;
       exhibitionCarousel.setAttribute("aria-label", `广告放映区，第 ${index + 1} 幕，共 ${exhibitionSlides.length} 幕`);

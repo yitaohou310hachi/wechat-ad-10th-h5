@@ -1790,7 +1790,6 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      color: #14cc67;
       font-size: 14px;
       line-height: 20px;
       letter-spacing: .25px;
@@ -1798,10 +1797,12 @@
     }
 
     .exhibition-memory-label {
-      opacity: .6;
+      color: #fff;
+      opacity: .55;
     }
 
     .exhibition-memory-number {
+      color: #03e971;
       font-family: "Arial Rounded MT Bold", "SF Pro Rounded", sans-serif;
       font-size: 17.067px;
       font-weight: 700;
@@ -3292,7 +3293,7 @@
         count: "344,657",
         brand: "HUAWEI",
         cardLabel: "孙燕姿分享清爽粉芭乐饮品的朋友圈广告",
-        accent: "#14cc67",
+        accent: "#03e971",
         heart: "assets/figma-exhibition/vote-heart.svg",
         source: "assets/figma-exhibition/backdrop-source.png",
         cardSource: "assets/figma-exhibition/ad-card.png",
@@ -3306,7 +3307,7 @@
         count: "344,657",
         brand: "乐事",
         cardLabel: "吴磊分享乐事薯片的朋友圈广告",
-        accent: "#14cc67",
+        accent: "#03e971",
         heart: "assets/figma-exhibition/vote-heart.svg",
         source: "assets/figma-exhibition/slide-2-source.png",
         cardCrop: { top: 2.97, left: 10.85, width: 78.1, height: 92.15 },
@@ -3318,7 +3319,7 @@
         count: "344,657",
         brand: "乐事",
         cardLabel: "范丞丞邀请猜拳互动的乐事朋友圈广告",
-        accent: "#14cc67",
+        accent: "#03e971",
         heart: "assets/figma-exhibition/vote-heart.svg",
         source: "assets/figma-exhibition/slide-03-source.png",
         cardCrop: { top: 3.74, left: 15.33, width: 69.13, height: 90.52 },
@@ -3868,7 +3869,7 @@
       const slide = exhibitionSlides[index];
       exhibitionTitle.textContent = slide.title;
       exhibitionMemoryNumber.textContent = slide.count;
-      exhibitionMemoryCount.style.color = slide.accent;
+      exhibitionMemoryNumber.style.color = slide.accent;
       exhibitionVoteHeart.src = slide.heart;
       exhibitionVoteBrand.textContent = slide.brand;
       exhibitionCarousel.setAttribute("aria-label", `广告放映区，第 ${index + 1} 幕，共 ${exhibitionSlides.length} 幕`);
